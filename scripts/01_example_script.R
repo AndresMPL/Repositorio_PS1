@@ -13,6 +13,7 @@ local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; option
 
 
 # Load Packages -----------------------------------------------------------
+install.packages("here")
 pkg<-list("dplyr","here")
 lapply(pkg, require, character.only=T)
 rm(pkg)
