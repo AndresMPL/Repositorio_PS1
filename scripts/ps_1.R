@@ -10,7 +10,6 @@ rm(list=ls())
 cat("\014")
 set.seed(100101)
 
-require(pacman)
 library(pacman)
 
 p_load(rio,
@@ -22,12 +21,6 @@ p_load(rio,
 
 ## Loading
 
-tabla0 <- import("https://github.com/ignaciomsarmiento/datasets/blob/main/GEIH_sample1.Rds?raw=true")
-tabla0_tb <- as_tibble(tabla0)
-
-str(tabla0)
-str(tabla0_tb) #ensayos
-
 #data1  https://ignaciomsarmiento.github.io/GEIH2018_sample/page1.html
 #data2  https://ignaciomsarmiento.github.io/GEIH2018_sample/page2.html
 #data3  https://ignaciomsarmiento.github.io/GEIH2018_sample/page3.html
@@ -38,6 +31,16 @@ str(tabla0_tb) #ensayos
 #data8  https://ignaciomsarmiento.github.io/GEIH2018_sample/page8.html
 #data9  https://ignaciomsarmiento.github.io/GEIH2018_sample/page9.html
 #data10 https://ignaciomsarmiento.github.io/GEIH2018_sample/page10.html
+
+
+
+tabla0 <- import("https://github.com/ignaciomsarmiento/datasets/blob/main/GEIH_sample1.Rds?raw=true")
+
+tabla0 <- as_tibble(tabla0)
+
+str(tabla0)
+
+
 
 
 
