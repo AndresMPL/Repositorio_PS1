@@ -31,6 +31,20 @@ url10 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/ge
 
 
 
+#cargando las tablas
+tabla1 <- url1 %>% html_table() %>% as.data.frame()
+tabla2 <- url2 %>% html_table() %>% as.data.frame()
+tabla3 <- url3 %>% html_table() %>% as.data.frame()
+tabla4 <- url4 %>% html_table() %>% as.data.frame()
+tabla5 <- url5 %>% html_table() %>% as.data.frame()
+tabla6 <- url6 %>% html_table() %>% as.data.frame()
+tabla7 <- url7 %>% html_table() %>% as.data.frame()
+tabla8 <- url8 %>% html_table() %>% as.data.frame()
+tabla9 <- url9 %>% html_table() %>% as.data.frame()
+tabla10 <- url10 %>% html_table() %>% as.data.frame()
+
+
+
 #Para revisar las variables seleccionadas
 tablaps1 <- tabla0 %>% select(age,
                             y_salary_m_hu, #salary - real hourly (usual) - principal occ. (includes tips and commissions)
