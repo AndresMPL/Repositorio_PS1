@@ -14,39 +14,34 @@ p_load(rio,
        readxl,
        rvest)
 
-## Loading
-
-
 #cargando las páginas
-url1 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_1.html")
-url2 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_2.html")
-url3 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_3.html")
-url4 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_4.html")
-url5 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_5.html")
-url6 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_6.html")
-url7 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_7.html")
-url8 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_8.html")
-url9 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_9.html")
-url10 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_10.html")
-
+  url1  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_1.html")
+  url2  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_2.html")
+  url3  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_3.html")
+  url4  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_4.html")
+  url5  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_5.html")
+  url6  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_6.html")
+  url7  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_7.html")
+  url8  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_8.html")
+  url9  <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_9.html")
+  url10 <- read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_10.html")
 
 
 #cargando las tablas
-tabla1 <- url1 %>% html_table() %>% as.data.frame()
-tabla2 <- url2 %>% html_table() %>% as.data.frame()
-tabla3 <- url3 %>% html_table() %>% as.data.frame()
-tabla4 <- url4 %>% html_table() %>% as.data.frame()
-tabla5 <- url5 %>% html_table() %>% as.data.frame()
-tabla6 <- url6 %>% html_table() %>% as.data.frame()
-tabla7 <- url7 %>% html_table() %>% as.data.frame()
-tabla8 <- url8 %>% html_table() %>% as.data.frame()
-tabla9 <- url9 %>% html_table() %>% as.data.frame()
-tabla10 <- url10 %>% html_table() %>% as.data.frame()
-
+  tabla1  <- url1  %>% html_table() %>% as.data.frame()
+  tabla2  <- url2  %>% html_table() %>% as.data.frame()
+  tabla3  <- url3  %>% html_table() %>% as.data.frame()
+  tabla4  <- url4  %>% html_table() %>% as.data.frame()
+  tabla5  <- url5  %>% html_table() %>% as.data.frame()
+  tabla6  <- url6  %>% html_table() %>% as.data.frame()
+  tabla7  <- url7  %>% html_table() %>% as.data.frame()
+  tabla8  <- url8  %>% html_table() %>% as.data.frame()
+  tabla9  <- url9  %>% html_table() %>% as.data.frame()
+  tabla10 <- url10 %>% html_table() %>% as.data.frame()
 
 
 #Para revisar las variables seleccionadas
-tablaps1 <- tabla0 %>% select(age,
+tps1 <- tabla0 %>% select(age,
                             y_salary_m_hu, #salary - real hourly (usual) - principal occ. (includes tips and commissions)
                             y_total_m_ha,  #income salaried + independents total - nominal hourly
                             y_ingLab_m_ha, #labor income salaried - nomial hourly - all occ. (includes tips and commissions
@@ -73,24 +68,23 @@ tablaps1 <- tabla0 %>% select(age,
                       filter(age >= 18) %>%
                       filter(inac == 0)
 
-        tabla1$female <- ifelse(tabla1$sex == 0, 1,0)
+        tps1$female <- ifelse(tps1$sex == 0, 1,0)
 
 
 #verifico el filtro
-summary(tabla1$age)
+  summary(tps1$age)
+  
+  grupos_edad <- tps1 %>% 
+                        group_by(age) %>% 
+                        tally() %>% 
+                        arrange(age) %>% 
+                        rename("total_edad"=n, "edad"=age)
+                        View(grupos_edad)
 
-grupos_edad <- tabla1 %>% 
-                      group_by(age) %>% 
-                      tally() %>% 
-                      arrange(age) %>% 
-                      rename("total_edad"=n, "edad"=age)
-                      View(grupos_edad)
-
+                        
 #verifico el genero
-count(tabla1, sex)
-count(tabla1, female)
-
-
+  count(tabla1, sex)
+  count(tabla1, female)
 
 
 ## Data description
