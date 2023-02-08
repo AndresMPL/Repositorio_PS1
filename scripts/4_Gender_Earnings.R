@@ -1,10 +1,11 @@
 
-#-----------------------------------------------------------------------#
-#                       4 - Brecha salarial por género 
+#------------------------------------------------------------------------------#
+#
+#                          4 - Brecha salarial por género 
 #
 #                Salario = Bo + B1*Edad + B2*Mujer + B3EducNivel
 #
-#-----------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 library(pacman)
 
@@ -77,7 +78,7 @@ conteo_na <- sum(is.na(tps1_female$salario)) +
 conteo_na #cero es correcto
 
 
-# Perfil de edad-salario---------------------------------------------
+# Perfil de edad-salario--------------------------------------------------------
 
 grafico1 <- ggplot(data=tps1_female,
                    mapping = aes(x=age , y = salario, group=as.factor(sex) , color=as.factor(sex))) +
@@ -109,7 +110,7 @@ grafico2 <- ggplot(perfil) +
   theme_bw()
 
 
-# FWL ---------------------------
+# FWL --------------------------------------------------------------------------
 
 #Incrementamos la variable control para hacer mas clara la diferencia
 
@@ -168,7 +169,7 @@ grafico3 <- ggplot(tps1_female,aes(y=y1,x=x1,group=x2,col=factor(x2))) +
               color="blue", size=1) +
   theme_bw()
 
-## Comprobaciones---------------------------------------------
+## Comprobaciones---------------------------------------------------------------
 
 #Obervar - Omitir un regresor cambia los coeficientes de otros regresores
 
