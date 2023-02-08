@@ -1,6 +1,6 @@
 
 #-----------------------------------------------------------------------
-#                          (3) Brecha salarial por género 
+#                          4 - Brecha salarial por género 
 #-----------------------------------------------------------------------
   
   setwd("C:/Users/User/OneDrive - Universidad de los Andes/06_Big Data/Taller 1")
