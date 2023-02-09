@@ -55,7 +55,7 @@ write.csv(base, "GEIH.csv")
 
 #Selección de Variables de interés ----------------------------
 dt_total <- base %>% 
-  select(directorio, age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
+  select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
 view(dt_total)
 
 ### select(hoursWorkUsual,directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p6426, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
@@ -91,7 +91,7 @@ count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ----
 
 #Seleccionamos las variables que cumplen con el requisito y sacamos estadísticas descriptivas
 dt_final <- base_fin %>% 
-  select(age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
+  select(age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
 View(dt_final)
 stargazer(dt_final, type='latex')
 
