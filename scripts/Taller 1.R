@@ -55,17 +55,23 @@ write.csv(base, "GEIH.csv")
 
 #Selección de Variables de interés ----------------------------
 dt_total <- base %>% 
-  select(directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
+  select(directorio, age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
 view(dt_total)
+
+### select(hoursWorkUsual,directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p6426, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
+
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
 base_fin <- dt_total %>% 
   subset(age>=18) %>% 
-  subset(dsi==0)
+  subset(ocu==1)
+
+###subset(dsi==0)
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
 missing_percentage <-sapply(base_fin, function(y) sum(length(which(is.na(y))))/length(base_fin$directorio))
+
 #creo una función para saber cuantos NAs hay por columna ------------------------
 data_x <- as.data.frame(missing_percentage)
 View(missing_percentage)
@@ -84,9 +90,12 @@ count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ----
 ##########################################
 
 #Seleccionamos las variables que cumplen con el requisito y sacamos estadísticas descriptivas
-dt_final <- dt_interes %>% select(age, college, cotPension, cuentaPropia, directorio, dsi, estrato1, fex_c, hoursWorkUsual, ingtot, ingtotob, maxEducLevel, oficio, p6426, p7500s1a1, p7500s2a1, p7510s5a1, sex, totalHoursWorked)
+dt_final <- base_fin %>% 
+  select(age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
 View(dt_final)
 stargazer(dt_final, type='latex')
+
+###select(age, college, cotPension, cuentaPropia, directorio, dsi, estrato1, fex_c, formal, hoursWorkUsual, ingtot, ingtotob, maxEducLevel, oficio, p6426, p7500s1a1, p7500s2a1, p7510s5a1, sex, totalHoursWorked)
 
 #Imputamos Missing Values y comparamos estadísticas descriptivas
 dt_imputado <-  kNN(dt_final, variable = c("cotPension", "hoursWorkUsual", "p6426", "totalHoursWorked"), k = 6)
