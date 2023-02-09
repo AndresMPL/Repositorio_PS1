@@ -91,7 +91,7 @@ count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ----
 
 #Seleccionamos las variables que cumplen con el requisito y sacamos estadísticas descriptivas
 dt_final <- base_fin %>% 
-  select(age, clase, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
+  select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
 View(dt_final)
 stargazer(dt_final, type='latex')
 
