@@ -171,25 +171,26 @@ grafico2 <- ggplot(perfil) +
                           color="blue", size=1) +
               theme_bw()
  
-  #La línea azul muestra la regresión del salario solo con la edad
-  #Las otras dos líneas muestran el salario con la edad, separando el género.
-  #La línea rosada - hombres
-  #La línea celeste - mujeres
-  #El salario si está influido por el género, cuando es hombres aumenta más que cuando son mujeres
+              #La línea azul muestra la regresión del salario solo con la edad
+              #Las otras dos líneas muestran el salario con la edad, separando el género.
+              #La línea rosada - hombres
+              #La línea celeste - mujeres
+              #El salario si está influido por el género, cuando es hombre aumenta más que cuando son mujeres
+              #Por eso cuando incluimos la línea de las mujeres la regresiín azul cae
 
-  
+
 ## Comprobaciones---------------------------------------------------------------
   
-#Regresión 3 - Esperamos X (~x2) cambie el coeficiente, pero no los otros coeficientes.
+#Regresión 3 - Esperamos que (~x2) cambie el coeficiente, pero no los otros coeficientes.
 
-  tps1_female <- tps1_female %>% mutate(new_x1 = x1 + 1000*x2) #k =1000
+  tps1_female <- tps1_female %>% mutate(new_x1 = x1 + 1000*x2) #k =1000 Cambiamos el salario de las mujeres
   r3 <- lm(y1~new_x1+x2, tps1_female)
   stargazer(reg1, r3, type = "text", digits = 7)
 
 #Regresión 4
 
   r4 <- lm(y1~x2+x1Resid, tps1_female)
-  stargazer(r4, type = "text", digits = 4)
+  stargazer(r4, type = "text", digits = 7)
   with(tps1_female, cor(x1Resid, x2))
 
 #Regresión 5
