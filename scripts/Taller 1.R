@@ -54,7 +54,8 @@ write.csv(base, "GEIH.csv")
 
 
 #Selección de Variables de interés ----------------------------
-dt_total <- base %>% select(directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
+dt_total <- base %>% 
+  select(directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
 view(dt_total)
 
 #Filtrar los individuos empleados y mayores de edad -------------------
