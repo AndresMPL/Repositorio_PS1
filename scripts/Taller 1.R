@@ -37,8 +37,8 @@ for(i in link){
   print(i)
   
   GEIH<- read_html(i) %>% 
-    html_table() 
-  GEIH <-as.data.frame(GEIH[[1]])
+    html_table() %>%
+    as.data.frame()
   base <- rbind(base, GEIH)
 }
 
