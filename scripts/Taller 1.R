@@ -99,7 +99,7 @@ stargazer(dt_final, type='latex')
 
 #Imputamos Missing Values y comparamos estadísticas descriptivas
 dt_imputado <-  kNN(dt_final, variable = c("cotPension", "hoursWorkUsual", "p6426", "totalHoursWorked"), k = 6)
-summary(dt_imputado)
+summary(dt_final)
 stargazer(dt_imputado, type='latex')
 
 ##########################################
