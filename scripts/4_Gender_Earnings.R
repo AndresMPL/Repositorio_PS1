@@ -232,7 +232,15 @@ grafico2 <- ggplot(perfil) +
                           intercept=r7$coefficients[1],
                           color="darkgreen", size=1) +
               theme_bw()
-
+  
+  
+#Edades pico con intervalos de confianza por género----------------------------
+  
+  
+  
+  
+  
+  
 
 #FWL con bootstrap ---------------------------
 
