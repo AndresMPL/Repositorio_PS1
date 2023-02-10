@@ -1,9 +1,9 @@
 
 #------------------------------------------------------------------------------#
 #
-#                          4 - Brecha salarial por género 
+#                       4 - Brecha salarial por género 
 #
-#                Salario = Bo + B1*Edad + B2*Mujer + B3EducNivel
+#    Salario = Bo + B1*Edad + B2*Mujer + B3*EducNivel + B4*PuestoTrabajo
 #
 #------------------------------------------------------------------------------#
 
@@ -15,152 +15,139 @@
          caret,
          readxl,
          rvest,
-         stargazer)
+         stargaze,
+         knitr)
   
   library(dplyr)
+  library(tidyr)
 
 
-#Base de datos que vamos a usar
+#Cargamos la base de datos que vamos a usar
 
-  rm(tps1_female)
-  setwd("C:/Users/User/OneDrive - Universidad de los Andes/06_Big Data/Taller 1")
-  tps1_female <- read.csv("base_fin.csv")
-
-
-#Definimos las variables que trabajaremos
-
-#   y1 <- Salario
-#   x1 <- Edad
-#   x2 <- Mujer
-#   x3 <- Nivel_Educación
+  rm(list=ls())
+  tps1_female <- dt_final
 
 
-#Limpiamos los datos de NA
+#Seleccionamos y validamos las variables que necesitamos
 
-  filas_total <- nrow(tps1_female) #contamos las filas
-  
-  na_total <- sum(is.na(tps1_female$y_salary_m_hu)) #guardamos las filas NA en salario
-  
-  tps1_female <- tps1_female %>% filter(y_salary_m_hu != "NA") #eliminamos las filas NA en salario
-  
-  na_total <- na_total + sum(is.na(tps1_female$maxEducLevel)) #agregamos el número filas que queden con NA en Educ Level
-  
-  tps1_female <- tps1_female %>% filter(maxEducLevel != "NA") #eliminamos las filas con NA en Educ Level
-  
-  filas_final <- nrow(tps1_female) #contamos las filas que quedaron
-  
-  filas_total - na_total - filas_final  #debe dar 0 cuando se cumpla la diferencia después de las eliminaciones
+  tps1_female <-  tps1_female %>% 
+                  select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
+                  mutate(salario = log(y_salary_m_hu))
 
-
-#Seleccionamos las variables que necesitamos, geramos nuevas variables y aseguramos las que necesitamos numéricas
-
-  tps1_female <-  tps1_female %>% select(directorio,y_salary_m_hu, age, sex, clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1) %>%
-                                  mutate(salario = log(y_salary_m_hu)) %>%
-                                  mutate(age2 = age^2)
-  
   tps1_female$female <- ifelse(tps1_female$sex == 0, 1,0) %>% as.numeric()
-  
+
   tps1_female <- tps1_female %>% mutate(salario=as.numeric(salario)) %>% 
                                  mutate(maxEducLevel=as.numeric(maxEducLevel)) %>%
-                                 mutate(age2=as.numeric(age2))
+                                 mutate(age=as.numeric(age)) %>%
+                                 mutate(sex=as.numeric(sex)) %>%
+                                 mutate(y_total_m_ha=as.numeric(y_total_m_ha))
 
 
-count(tps1_female, female, sex) #verificamos la creación del género correctamente
+#Especificamos variables que usaremos y sus interacciones
+
+    y1 <- tps1_female$salario
+    x1 <- tps1_female$age
+    x2 <- tps1_female$female
+    x3 <- tps1_female$maxEducLevel
+    x4 <- tps1_female$age^2
+    x5 <- tps1_female$age * tps1_female$maxEducLevel
+    x6 <- tps1_female$age * tps1_female$female
+    x7 <- tps1_female$female * tps1_female$maxEducLevel
+    x8 <- tps1_female$college
 
 
-#verificamos no haya ningun NA
+# Perfil Edad-Salario--------------------------------------------------------
+  
+  grafico1 <- ggplot(data=tps1_female,
+              mapping = aes(x=age , y = salario, group=as.factor(sex) , color=as.factor(sex))) +
+              geom_point() + 
+              stat_smooth(method = lm, se = FALSE, level=0.95) + 
+              theme_bw()
+  
+  grafico1
+  
+  reg_line <- lm(salario~age,   data = tps1_female)
+  stargazer(reg_line, type = "text", digits=7, 
+                      title="Perfil Salario ~ Edad", 
+                      column.labels= "Modelo 1", 
+                      covariate.labels = "Edad",
+                      dep.var.labels = "Ln(Salario)")
+  
+  tps1_female$yhat_line= predict(reg_line)
+  
+  reg_sq <- lm(salario~age + I(age^2),   data = tps1_female)
+  stargazer(reg_sq, type= "text", digits=7, title="Perfil Salario ~ Edad + Edad^2")
+  tps1_female$yhat_sq= predict(reg_sq)
+  
+  perfil = tps1_female %>%
+                        group_by(age) %>%
+                        summarize(mean_y = mean(salario),
+                                  yhat_line = mean(yhat_line),
+                                  yhat_sq=mean(yhat_sq),
+                                  .groups="drop")
+  
+  grafico2 <- ggplot(perfil) + 
+              geom_point(aes(x = age, y = mean_y), color = "#FF4500", size = 2) + 
+              geom_line(aes(x = age, y = yhat_line), color = "#0000EE", size = 1) +
+              geom_line(aes(x = age, y = yhat_sq), color = "#00CD00", size = 1) +
+              labs(title = "Perfil Edad-Salario", x = "Edad", y = "Salario") +
+              theme_bw()
 
-conteo_na <- sum(is.na(tps1_female$salario)) + 
-  sum(is.na(tps1_female$y_salary_m_hu)) + 
-  sum(is.na(tps1_female$female)) + 
-  sum(is.na(tps1_female$maxEducLevel))
-
-conteo_na #cero es correcto
+grafico2 #revisar atípicos
 
 
-# Perfil de edad-salario--------------------------------------------------------
+#Edades pico con intervalos de confianza----------------------------
 
-grafico1 <- ggplot(data=tps1_female,
-                   mapping = aes(x=age , y = salario, group=as.factor(sex) , color=as.factor(sex))) +
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) + 
-  theme_bw()
-
-reg_line <- lm(salario~age,   data = tps1_female)
-summary(reg_line)
-tps1_female$yhat_line= predict(reg_line)
-
-
-reg_sq <- lm(salario~age + age2,   data = tps1_female)
-summary(reg_sq)
-tps1_female$yhat_sq= predict(reg_sq)
-
-perfil = tps1_female %>%  
-  group_by(age) %>%
-  summarize(mean_y = mean(salario),
-            yhat_line = mean(yhat_line),
-            yhat_sq=mean(yhat_sq),
-            .groups="drop")
-
-grafico2 <- ggplot(perfil) + 
-  geom_point(aes(x = age, y = mean_y), color = "#FF4500", size = 2) + 
-  geom_line(aes(x = age, y = yhat_line), color = "#0000EE", size = 1.5) +
-  geom_line(aes(x = age, y = yhat_sq), color = "#00CD00", size = 1.5) +
-  labs(title = "Perfil Edad-Salario", x = "Edad", y = "Salario") +
-  theme_bw()
 
 
 # FWL --------------------------------------------------------------------------
 
 #Incrementamos la variable control para hacer mas clara la diferencia
 
-#summary(tps1_female$salario) #voy a incrementar female=1 
-#tps1_female <- tps1_female %>% mutate(salario=ifelse(female==1,salario+1000,salario))
+  #summary(tps1_female$salario) #voy a incrementar female=1 
+  #tps1_female <- tps1_female %>% mutate(salario=ifelse(female==1,salario+1000,salario))
 
 
-#Regresiones
-
-  y1 <- tps1_female$salario
-  x1 <- tps1_female$age
-  x2 <- tps1_female$female
-  x3 <- tps1_female$maxEducLevel
+#Modelo Original
 
   reg1 <- lm(y1 ~ x1 + x2, data = tps1_female)
-  stargazer(reg1, type= "text", digits=7)
+  stargazer(reg1, type= "text", digits=7, title="Modelo Original")
 
 #(1) Regresión de la variable x1 en x2 y guardamos los residuos
-  
+
   tps1_female <- tps1_female %>% mutate(x1Resid = lm(x1~x2, tps1_female)$residuals)
 
 #(2) Regresión de y en x2 y guardamos los residuos
-  
-  tps1_female <- tps1_female %>% mutate(y1Resid = lm(y1~x2, tps1_female)$residuals)
+
+tps1_female <- tps1_female %>% mutate(y1Resid = lm(y1~x2, tps1_female)$residuals)
 
 #(3) Regresión de los residuos de (2) sobre los residuos de (1)
-  
+
   reg2 <- lm(y1Resid~x1Resid, tps1_female)
-  stargazer(reg1, reg2, type = "text", digits = 7)
+  stargazer(reg1, reg2, type = "text", digits = 7, title="Comparación de Modelos")
+
 
 #Verificamos que los coeficientes de reg1 y reg2 sean iguales
 
   sum(resid(reg1)^2)
   sum(resid(reg2)^2)
 
+
 #Ajustamos los grados de libertad y verificamos que el error estandar de reg1 y reg 2 sea igual, 
 
   sqrt(diag(vcov(reg2))*(reg2$df.residual/reg1$df.residual))[2]
   sqrt(diag(vcov(reg1)))[2]
 
- 
+
 #Estimamos si existe Correlación entre x1 y x2
-  
+
   reg3 <- lm(y1 ~ x1, tps1_female)   #Si omitimos un regresor se cambia los coeficientes de otros regresores
   
-  stargazer(reg1,reg3, type = "text", digits = 7) #comparar el coeficiente de x1
+  stargazer(reg1, reg3, type = "text", digits = 7, tittle = "Comparación de modelos omitiendo una variable") #comparar el coeficiente de x1
   
   with(tps1_female,cor(x2,x1)) #Esto sucede porque existe correlación entre x1 y x2
-  
-  
+
+
 #Gráfico
 
   grafico3 <- ggplot(tps1_female,aes(y=y1,x=x1,group=x2,col=factor(x2))) +
@@ -169,86 +156,22 @@ grafico2 <- ggplot(perfil) +
               geom_abline(slope=reg3$coefficients[2],	#pendiente - aquí vemos la regresión solo de y1~x1
                           intercept=reg3$coefficients[1], #intercepto
                           color="blue", size=1) +
-              theme_bw()
- 
-              #La línea azul muestra la regresión del salario solo con la edad
-              #Las otras dos líneas muestran el salario con la edad, separando el género.
-              #La línea rosada - hombres
-              #La línea celeste - mujeres
-              #El salario si está influido por el género, cuando es hombre aumenta más que cuando son mujeres
-              #Por eso cuando incluimos la línea de las mujeres la regresiín azul cae
-
-
-## Comprobaciones---------------------------------------------------------------
-  
-#Regresión 3 - Esperamos que (~x2) cambie el coeficiente, pero no los otros coeficientes.
-
-  tps1_female <- tps1_female %>% mutate(new_x1 = x1 + 1000*x2) #k =1000 Cambiamos el salario de las mujeres
-  r3 <- lm(y1~new_x1+x2, tps1_female)
-  stargazer(reg1, r3, type = "text", digits = 7)
-
-#Regresión 4
-
-  r4 <- lm(y1~x2+x1Resid, tps1_female)
-  stargazer(r4, type = "text", digits = 7)
-  with(tps1_female, cor(x1Resid, x2))
-
-#Regresión 5
-
-  r5<-lm(y1~x1Resid, tps1_female)
-  stargazer(r4, r5, type = "text", digits = 4)
-
-#Gráfico
-
-  grafico4 <- ggplot(tps1_female,aes(y=y1,x=x1Resid,group=x2,col=factor(x2))) +
-              geom_point() +
-              geom_abline(slope=r4$coefficients[3],
-                          intercept=r4$coefficients[1],
-                          color="red", size=1) +
-              geom_abline(slope=r4$coefficients[3],
-                          intercept=r4$coefficients[1]+r4$coefficients[2],
-                          color="blue", size=1) +
-              geom_abline(slope=r5$coefficients[2],
-                          intercept=r5$coefficients[1],
-                          color="darkgreen", size=1) +
-              theme_bw()
-
-#Regresión 6
-
-  r6<-lm(y1Resid~x1Resid+x2,tps1_female)
-  stargazer(r4,r5,r6,type="text",digits=4)
-
-#Regresión 7
-
-  r7<-lm(y1Resid~x1Resid,tps1_female)
-  stargazer(r6,r7,type="text",digits=4)
-
-  grafico5 <- ggplot(tps1_female,aes(y=y1Resid,x=x1Resid,group=x2,col=factor(x2))) +
-              geom_point() +
-              geom_abline(slope=r6$coefficients[2],
-                          intercept=r6$coefficients[1],
-                          color="red", size=1) +
-              geom_abline(slope=r7$coefficients[2],
-                          intercept=r7$coefficients[1],
-                          color="darkgreen", size=1) +
+              labs(title = "Perfil Edad-Salario-Género", x = "Edad", y = "Salario") +
               theme_bw()
   
-  
-#Edades pico con intervalos de confianza por género----------------------------
-  
-  
-  
-  
-  
-  
+  grafico3
 
-#FWL con bootstrap ---------------------------
+  #La línea azul muestra la regresión del salario solo con la edad
+  #Las otras dos líneas muestran el salario con la edad, separando el género.
+  #La línea rosada - hombres
+  #La línea celeste - mujeres
+  #El salario si está influido por el género, cuando es hombre aumenta más que cuando son mujeres
+  #Por eso cuando incluimos la línea de las mujeres la regresión azul cae
 
 
-
+#FWL con bootstrap--------------------------------------------------------------
 
 
 
-# Comparaciones -------------------------------
 
-  
+
