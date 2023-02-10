@@ -1,117 +1,148 @@
-##########################################
-#              Taller 1
-##########################################
+
+#---------------------------------------------------------------------------
+#                           
+#                               Taller 1
+#
+# Grupo 5:  Isabella Mendez Pedraza.
+#           Manuela Ojeda Ojeda.
+#           Juan Sebastian Tellez Melo.
+#           Andres Mauricio Palacio Lugo.
+#
+#---------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------
+#                      2. Datos y pasos previos
+#---------------------------------------------------------------------------
 
 
+#Limpieza de area de trabajo --------------------------------------------
 
+  rm(list = ls())
 
-##########################################
-#              0. Pasos previos
-##########################################
+#Seleccionar directorio---------------------------------------------------
 
+  setwd("/Users/manuelaojeda/Desktop/Universidad /MAESTRIA")
 
-# Limpieza de area de trabajo --------------------------------------------
+#Cargar paquetes---------------------------------------------------
 
-rm(list = ls())
+  require(pacman)
+  p_load(tidyverse, rvest)
 
-# Seleccionar directorio---------------------------------------------------
-
-setwd("/Users/manuelaojeda/Desktop/Universidad /MAESTRIA")
-
-# Cargar paquetes---------------------------------------------------
-
-require(pacman)
-p_load(tidyverse, rvest)
-
-##########################################
+##############################################################################
 #       1.1 Scrapping (obtener datos)
-##########################################
+##############################################################################
 
 #Creamos un vector con los diferentes links ---------------------------------
-link <- paste0("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_", 1:10, ".html")
 
+  link <- paste0("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_", 1:10, ".html")
+
+  
 #Se crea un loop para agrupar las diferentes tablas --------------------------
 
-base <-data.frame()
-for(i in link){
-  print(i)
-  
-  GEIH<- read_html(i) %>% 
-    html_table() %>%
-    as.data.frame()
-  base <- rbind(base, GEIH)
-}
+  base <- data.frame()
+          for(i in link){
+                        print(i)
+                        GEIH<- read_html(i) %>% 
+                        html_table() %>%
+                        as.data.frame()
+                        base <- rbind(base, GEIH)
+                        }
 
 #Visualizar base -------------------------
-View(base)
+  
+  View(base)
 
 #Exportar base ---------------------------
-write.csv(base, "GEIH.csv")
+  
+  write.csv(base, "GEIH.csv")
 
-##########################################
+  
+##############################################################################
 #       1.2 Limpieza de datos
-##########################################
+##############################################################################
 
 
 #Selección de Variables de interés ----------------------------
-dt_total <- base %>% 
-  select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
-view(dt_total)
-
-### select(hoursWorkUsual,directorio,age,clase,college,cotPension,cuentaPropia,dsi,estrato1,fex_c,formal,totalHoursWorked,ingtotob, ingtotes, ingtot,iof1es, iof2es, iof6es, maxEducLevel, oficio, p6426, p550, p6090, p6580s1, p6920, p7500s1a1, p7500s2a1, p7510s5a1, sex)
-
+  
+  dt_total <- base %>% 
+              select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
+              
+  view(dt_total)
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
-base_fin <- dt_total %>% 
-  subset(age>=18) %>% 
-  subset(ocu==1)
-
-###subset(dsi==0)
+  base_fin <- dt_total %>% 
+              subset(age>=18) %>% 
+              subset(ocu==1)
+              #subset(dsi==0)
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
-missing_percentage <-sapply(base_fin, function(y) sum(length(which(is.na(y))))/length(base_fin$directorio))
+
+  missing_percentage <-sapply(base_fin, function(y) sum(length(which(is.na(y))))/length(base_fin$directorio))
 
 #creo una función para saber cuantos NAs hay por columna ------------------------
-data_x <- as.data.frame(missing_percentage)
-View(missing_percentage)
 
+  data_x <- as.data.frame(missing_percentage)
+  View(data_x)
+  
 #Se eliminan las variables con un alto porcentaje de missing value (>50%)----------------------
-var <- cbind(Var_name = rownames(data_x), data_x)
-rownames(var) <- 1:nrow(var)
-var_delete <- var[var$missing_percentage>=0.5,]
-var_keep <- var[var$missing_percentage<0.5,]
-count(var) # Contamos cuantas variables tenemos en total ----------------------
-count(var_keep) # Contamos cuantas variables tienen % missing menor o igual a 50% -----------------
-count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ---------------------
 
-##########################################
+  var <- cbind(Var_name = rownames(data_x), data_x)
+  rownames(var) <- 1:nrow(var)
+  var_delete <- var[var$missing_percentage>=0.5,]
+  var_keep <- var[var$missing_percentage<0.5,]
+  count(var) # Contamos cuantas variables tenemos en total ----------------------
+  count(var_keep) # Contamos cuantas variables tienen % missing menor o igual a 50% -----------------
+  count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ---------------------
+
+#Limpiamos los datos de NA´s
+  
+  filas_total <- nrow(base_fin)    #contamos las filas
+  na_total <- sum(is.na(base_fin$y_salary_m_hu))   #guardamos las filas NA en y_salary_m_hu
+  base_fin <- base_fin %>% filter(y_salary_m_hu != "NA")  #eliminamos las filas NA en y_salary_m_hu
+  na_total <- na_total + sum(is.na(base_fin$maxEducLevel))   #agregamos el número filas que queden con NA en Educ Level
+  base_fin <- base_fin %>% filter(maxEducLevel != "NA")   #eliminamos las filas con NA en Educ Level
+  na_total <- na_total + sum(is.na(base_fin$y_total_m_ha))   #agregamos el número filas que queden con NA en y_total_m_ha
+  base_fin <- base_fin %>% filter(y_total_m_ha != "NA")   #eliminamos las filas con NA en Educ Level
+  filas_final <- nrow(base_fin)  #contamos las filas que quedaron
+  filas_total - na_total - filas_final    #debe dar 0 cuando se cumpla la diferencia después de las eliminaciones
+
+  conteo_na <-  sum(is.na(base_fin$y_salary_m_hu)) + 
+                sum(is.na(base_fin$salario)) + 
+                sum(is.na(base_fin$female)) + 
+                sum(is.na(base_fin$maxEducLevel)) +
+                sum(is.na(base_fin$y_total_m_ha))
+  conteo_na #cero es correcto
+
+  
+#Evaluamos datos atípicos-------------------------------------------------------
+  
+  
+  
+  
+################################################################################
 #       1.3 Estadisticas descriptivas
-##########################################
+################################################################################
 
 #Seleccionamos las variables que cumplen con el requisito y sacamos estadísticas descriptivas
-dt_final <- base_fin %>% 
-  select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
-View(dt_final)
-stargazer(dt_final, type='latex')
+  
+  dt_final <- base_fin %>% 
+              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
+  
+  View(dt_final)
+  stargazer(dt_final, type='latex')
 
-###select(age, college, cotPension, cuentaPropia, directorio, dsi, estrato1, fex_c, formal, hoursWorkUsual, ingtot, ingtotob, maxEducLevel, oficio, p6426, p7500s1a1, p7500s2a1, p7510s5a1, sex, totalHoursWorked)
 
-#Imputamos Missing Values y comparamos estadísticas descriptivas
-dt_imputado <-  kNN(dt_final, variable = c("cotPension", "hoursWorkUsual", "p6426", "totalHoursWorked"), k = 6)
-summary(dt_final)
-stargazer(dt_imputado, type='latex')
-
-##########################################
+################################################################################
 #              1.4 Gráficas
-##########################################
+################################################################################
 
-hist(x=dt_imputado$age, weights=dt_imputado$fex_c, main='', 
-     xlab='Edad', ylab='Frecuencia', fill='dodgerblue1')
-sum(dt_imputado$fex_c)
-hist(x=dt_imputado$college)
-hist(x=dt_imputado$cotPension)
-PieChart(estrato1, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_imputado$fex_c, radius=1, main="")
-PieChart(sex, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_imputado$fex_c, radius=1, main="")
-
-
+  hist(x=dt_final$age, weights=dt_final$fex_c, main='', 
+       xlab='Edad', ylab='Frecuencia', fill='dodgerblue1')
+  
+  sum(dt_final$fex_c)
+  hist(x=dt_final$college)
+  hist(x=dt_final$cotPension)
+  PieChart(estrato1, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
+  PieChart(sex, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
+  
