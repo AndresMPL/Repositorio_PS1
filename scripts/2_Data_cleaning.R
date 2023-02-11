@@ -131,6 +131,7 @@
   
   dt_final <- dt_final %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
+  
   dt_final <- dt_final %>% 
     mutate(age_squred = age^2)
   
