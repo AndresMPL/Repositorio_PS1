@@ -177,5 +177,76 @@
   p + scale_fill_manual(values = c("0"="coral1" , "1"="darkblue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
   
   
+
+  #Distribución de las edades
+  
+  dist_edad <- ggplot(data = dt_final,
+                      mapping = aes(x = age))  + 
+    geom_histogram(aes(y =after_stat(density)),
+                   bins = 9,
+                   position = 'identity',
+                   color="#424242", fill="#E3E3E3") +
+    stat_function(fun = dnorm, xlim = c(min(dt_final$age),max(dt_final$age)), colour="#1C86EE", linewidth=1,
+                  args = list(mean = mean(dt_final$age), 
+                              sd = sd(dt_final$age))) + 
+    labs(title = 'Distribución de edad',
+         x = 'Edad',
+         y = 'Frecuencia') + 
+    theme_bw()
+  
+  #Distribución de los salarios
+  
+  #LogSalario
+  dist_lnsalario <- ggplot(data = dt_final,
+                           mapping = aes(x = Ingresos_laborales))  + 
+    geom_histogram(aes(y =after_stat(density)),
+                   bins = 9,
+                   position = 'identity',
+                   color="#424242", fill="#E3E3E3") +
+    stat_function(fun = dnorm, xlim = c(min(dt_final$Ingresos_laborales),max(dt_final$Ingresos_laborales)),
+                  colour="red", linewidth=1,
+                  args = list(mean = mean(dt_final$Ingresos_laborales), 
+                              sd = sd(dt_final$Ingresos_laborales))) + 
+    labs(title = 'Distribución Log Salario',
+         x = 'Salarios',
+         y = 'Frecuencia') + 
+    theme_bw()
+  #Salario
+  dist_salario <- ggplot(data = dt_final,
+                         mapping = aes(x = y_total_m_ha))  + 
+    geom_histogram(aes(y =after_stat(density)),
+                   bins = 9,
+                   position = 'identity',
+                   color="#424242", fill="#E3E3E3") +
+    stat_function(fun = dnorm, xlim = c(min(dt_final$y_total_m_ha),max(dt_final$y_total_m_ha)),
+                  colour="red", linewidth=1,
+                  args = list(mean = mean(dt_final$y_total_m_ha), 
+                              sd = sd(dt_final$y_total_m_ha))) + 
+    labs(title = 'Distribución Salario',
+         x = 'Salarios',
+         y = 'Frecuencia') + 
+    theme_bw()
+  
+  #Perfil Eddad-Salario
+  
+  perfil_1a <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Lineal
+                      mapping = aes(x=age , y = Ingresos_laborales)) +
+    geom_point(size=1, color="gray") + 
+    stat_smooth(method = lm, se = TRUE, level=0.95) + 
+    labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
+    theme_bw()  
+  
+  perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuadrático
+                      mapping = aes(x=age , y = Ingresos_laborales)) +
+    geom_point(size=1, color="gray") + 
+    stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
+    labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
+    theme_bw()                     theme_bw()
+  
+  perfil_2 <- ggplot(data=dt_final, #perfil edad-salario sin observaciones
+                     mapping = aes(x=age , y = Ingresos_laborales)) +
+    stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
+    labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
+    theme_bw()
   
   
