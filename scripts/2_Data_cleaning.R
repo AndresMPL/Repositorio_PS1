@@ -76,15 +76,15 @@
 #Selección de Variables de interés ----------------------------
   
   dt_total <- base %>% 
-              select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
+    select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
               
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
   base_fin <- dt_total %>% 
-              subset(age>=18) %>% 
-              subset(ocu==1)
-              #subset(dsi==0)
+    subset(age>=18) %>% 
+    subset(ocu==1)
+              
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
 
@@ -110,8 +110,6 @@
 #Limpiamos los datos de NA´s
   
   filas_total <- nrow(base_fin)    #contamos las filas
-  na_total <- sum(is.na(base_fin$y_salary_m_hu))   #guardamos las filas NA en y_salary_m_hu
-  base_fin <- base_fin %>% filter(y_salary_m_hu != "NA")  #eliminamos las filas NA en y_salary_m_hu
   na_total <- na_total + sum(is.na(base_fin$maxEducLevel))   #agregamos el número filas que queden con NA en Educ Level
   base_fin <- base_fin %>% filter(maxEducLevel != "NA")   #eliminamos las filas con NA en Educ Level
   na_total <- na_total + sum(is.na(base_fin$y_total_m_ha))   #agregamos el número filas que queden con NA en y_total_m_ha
@@ -119,29 +117,43 @@
   filas_final <- nrow(base_fin)  #contamos las filas que quedaron
   filas_total - na_total - filas_final    #debe dar 0 cuando se cumpla la diferencia después de las eliminaciones
 
-  conteo_na <-  sum(is.na(base_fin$y_salary_m_hu)) + 
-                sum(is.na(base_fin$salario)) + 
-                sum(is.na(base_fin$female)) + 
-                sum(is.na(base_fin$maxEducLevel)) +
-                sum(is.na(base_fin$y_total_m_ha)) +
-                sum(is.na(base_fin$age))
+  conteo_na <- sum(is.na(base_fin$salario)) +
+    sum(is.na(base_fin$female)) +
+    sum(is.na(base_fin$maxEducLevel)) +
+    sum(is.na(base_fin$y_total_m_ha)) +
+    sum(is.na(base_fin$age))
   conteo_na #cero es correcto
 
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
   dt_final <- base_fin %>% 
-              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
-              mutate(salario = log(y_salary_m_hu))
+    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
   
-  dt_final$female <- ifelse(dt_final$sex == 0, 1,0) %>% as.numeric()
+  dt_final <- dt_final %>% 
+    mutate(Ingresos_laborales = log(y_total_m_ha))
   
-  dt_final <- dt_final %>% mutate(salario=as.numeric(salario)) %>% 
-              mutate(maxEducLevel=as.numeric(maxEducLevel)) %>%
-              mutate(age=as.numeric(age)) %>%
-              mutate(sex=as.numeric(sex)) %>%
-              mutate(y_total_m_ha=as.numeric(y_total_m_ha))
+  dt_final <- dt_final %>% 
+    mutate(age_squred = age^2)
   
-  stargazer(dt_final, type='latex')
+  dt_final <- dt_final %>% 
+    rename( experiencia = p6426)
+  
+  str(dt_final)
+  head(dt_final)
+  
+  dt_final$female <- ifelse(dt_final$sex == 0, 1, 0) %>% as.numeric()
+  
+# Definimos las variables categoricas
+  
+  Variables_categoricas <- c("maxEducLevel", "relab", "sizeFirm")
+  for (v in Variables_categoricas) {
+    dt_final[, v] <- as.factor(dt_final[, v, drop = T])
+  }
+
+# Dummyficar la base 
+  
+  dt_final <- model.matrix(~ ., dt_final) %>%
+    as.data.frame()
 
 
 ################################################################################
@@ -172,4 +184,5 @@
   hist(x=dt_final$cotPension)
   PieChart(estrato1, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
   PieChart(sex, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
+  
   

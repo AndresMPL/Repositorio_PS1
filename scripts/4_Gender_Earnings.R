@@ -7,7 +7,9 @@
 #
 #------------------------------------------------------------------------------#
 
-  library(pacman)
+rm(list=ls())  
+
+library(pacman)
   
   p_load(rio,
          tidyverse,
@@ -19,12 +21,12 @@
          knitr)
   
   library(dplyr)
-  library(tidyr)
+  
 
 
 #Cargamos la base de datos que vamos a usar
 
-  rm(list=ls())
+ 
   tps1_female <- dt_final
 
 #Seleccionamos y validamos las variables que necesitamos
@@ -95,24 +97,35 @@ grafico2 #revisar atípicos
   #summary(tps1_female$salario) #voy a incrementar female=1 
   #tps1_female <- tps1_female %>% mutate(salario=ifelse(female==1,salario+1000,salario))
 
+# unconditional wage gap 
 
-#Modelo Original
+reg_unconditional <- lm(Ingresos_laborales ~ female , data = tps1_female)
+stargazer(reg_unconditional, type= "text", digits=7, title="unconditional wage gap")
 
-  reg1 <- lm(y1 ~ x1 + x2, data = tps1_female)
+#conditional Model
+
+tps1_female <- tps1_female %>%
+  select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
+         microEmpresa, experiencia, Ingresos_laborales, female, age_squred)
+
+  reg1 <- lm( Ingresos_laborales ~ female + age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                microEmpresa + experiencia + Ingresos_laborales + female + age_squred, data = tps1_female)
   stargazer(reg1, type= "text", digits=7, title="Modelo Original")
 
 #(1) Regresión de la variable x1 en x2 y guardamos los residuos
 
-  tps1_female <- tps1_female %>% mutate(x1Resid = lm(x1~x2, tps1_female)$residuals)
+  tps1_female <- tps1_female %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                       microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female)$residuals)
 
 #(2) Regresión de y en x2 y guardamos los residuos
 
-tps1_female <- tps1_female %>% mutate(y1Resid = lm(y1~x2, tps1_female)$residuals)
+  tps1_female <- tps1_female %>% mutate(ingresos_Resid = lm(Ingresos_laborales ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                     microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female)$residuals)
 
 #(3) Regresión de los residuos de (2) sobre los residuos de (1)
 
-  reg2 <- lm(y1Resid~x1Resid, tps1_female)
-  stargazer(reg1, reg2, type = "text", digits = 7, title="Comparación de Modelos")
+  reg2 <- lm(ingresos_Resid~female_Resid, tps1_female)
+  stargazer(reg_unconditional, reg1, reg2, type = "text", digits = 7, title="Comparación de Modelos")
 
 
 #Verificamos que los coeficientes de reg1 y reg2 sean iguales
@@ -127,23 +140,11 @@ tps1_female <- tps1_female %>% mutate(y1Resid = lm(y1~x2, tps1_female)$residuals
   sqrt(diag(vcov(reg1)))[2]
 
 
-#Estimamos si existe Correlación entre x1 y x2
-
-  reg3 <- lm(y1 ~ x1, tps1_female)   #Si omitimos un regresor se cambia los coeficientes de otros regresores
-  
-  stargazer(reg1, reg3, type = "text", digits = 7, tittle = "Comparación de modelos omitiendo una variable") #comparar el coeficiente de x1
-  
-  with(tps1_female,cor(x2,x1)) #Esto sucede porque existe correlación entre x1 y x2
-
-
 #Gráfico
 
-  grafico3 <- ggplot(tps1_female,aes(y=y1,x=x1,group=x2,col=factor(x2))) +
+  grafico3 <- ggplot(tps1_female,aes(y=Ingresos_laborales,x=age,group=female,col=factor(female))) +
               geom_point() +
               geom_smooth(method = lm, se = FALSE) +
-              geom_abline(slope=reg3$coefficients[2],	#pendiente - aquí vemos la regresión solo de y1~x1
-                          intercept=reg3$coefficients[1], #intercepto
-                          color="blue", size=1) +
               labs(title = "Perfil Edad-Salario-Género", x = "Edad", y = "Salario") +
               theme_bw()
   
