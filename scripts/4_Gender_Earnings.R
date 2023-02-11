@@ -15,7 +15,7 @@
          caret,
          readxl,
          rvest,
-         stargaze,
+         stargazer,
          knitr)
   
   library(dplyr)
@@ -27,20 +27,8 @@
   rm(list=ls())
   tps1_female <- dt_final
 
-
 #Seleccionamos y validamos las variables que necesitamos
 
-  tps1_female <-  tps1_female %>% 
-                  select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
-                  mutate(salario = log(y_salary_m_hu))
-
-  tps1_female$female <- ifelse(tps1_female$sex == 0, 1,0) %>% as.numeric()
-
-  tps1_female <- tps1_female %>% mutate(salario=as.numeric(salario)) %>% 
-                                 mutate(maxEducLevel=as.numeric(maxEducLevel)) %>%
-                                 mutate(age=as.numeric(age)) %>%
-                                 mutate(sex=as.numeric(sex)) %>%
-                                 mutate(y_total_m_ha=as.numeric(y_total_m_ha))
 
 
 #Especificamos variables que usaremos y sus interacciones
