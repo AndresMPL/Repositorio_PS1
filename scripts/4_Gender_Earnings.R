@@ -7,7 +7,9 @@
 #
 #------------------------------------------------------------------------------#
 
-  library(pacman)
+rm(list=ls())  
+
+library(pacman)
   
   p_load(rio,
          tidyverse,
@@ -19,12 +21,12 @@
          knitr)
   
   library(dplyr)
-  library(tidyr)
+  
 
 
 #Cargamos la base de datos que vamos a usar
 
-  rm(list=ls())
+ 
   tps1_female <- dt_final
 
 #Seleccionamos y validamos las variables que necesitamos
