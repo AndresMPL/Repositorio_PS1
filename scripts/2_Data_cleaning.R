@@ -130,18 +130,15 @@
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
   dt_final <- base_fin %>% 
-              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
-              mutate(salario = log(y_salary_m_hu))
+              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
+              mutate(salario = log(y_salary_m_hu)) 
+  
+  str(dt_final)    
   
   dt_final$female <- ifelse(dt_final$sex == 0, 1,0) %>% as.numeric()
   
-  dt_final <- dt_final %>% mutate(salario=as.numeric(salario)) %>% 
-              mutate(maxEducLevel=as.numeric(maxEducLevel)) %>%
-              mutate(age=as.numeric(age)) %>%
-              mutate(sex=as.numeric(sex)) %>%
-              mutate(y_total_m_ha=as.numeric(y_total_m_ha))
+
   
-  stargazer(dt_final, type='latex')
 
 
 ################################################################################
