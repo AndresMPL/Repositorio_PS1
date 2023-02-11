@@ -84,7 +84,7 @@
   base_fin <- dt_total %>% 
               subset(age>=18) %>% 
               subset(ocu==1)
-              #subset(dsi==0)
+              
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
 
