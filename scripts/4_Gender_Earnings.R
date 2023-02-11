@@ -104,7 +104,7 @@ stargazer(reg_unconditional, type= "text", digits=7, title="unconditional wage g
 
 #Modelo Original
 
-  reg1 <- lm(y1 ~ x1 + x2, data = tps1_female)
+  reg1 <- lm( ~ x1 + x2, data = tps1_female)
   stargazer(reg1, type= "text", digits=7, title="Modelo Original")
 
 #(1) Regresión de la variable x1 en x2 y guardamos los residuos
