@@ -110,7 +110,7 @@
 #Limpiamos los datos de NA´s
   
   filas_total <- nrow(base_fin)    #contamos las filas
-  na_total <- na_total + sum(is.na(base_fin$maxEducLevel))   #agregamos el número filas que queden con NA en Educ Level
+  na_total <- sum(is.na(base_fin$maxEducLevel))   #agregamos el número filas que queden con NA en Educ Level
   base_fin <- base_fin %>% filter(maxEducLevel != "NA")   #eliminamos las filas con NA en Educ Level
   na_total <- na_total + sum(is.na(base_fin$y_total_m_ha))   #agregamos el número filas que queden con NA en y_total_m_ha
   base_fin <- base_fin %>% filter(y_total_m_ha != "NA")   #eliminamos las filas con NA en Educ Level
