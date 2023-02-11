@@ -160,29 +160,22 @@
 #       1.3 Estadisticas descriptivas
 ################################################################################
 
-
-      
-      
-      
-      
-      
-      
-      
-      
-
-      
+  summary(dt_final)
+  stargazer(dt_final, type='latex')
+  
       
 ################################################################################
 #              1.4 Gráficas
 ################################################################################
 
-  hist(x=dt_final$age, weights=dt_final$fex_c, main='', 
-       xlab='Edad', ylab='Frecuencia', fill='dodgerblue1')
   
-  sum(dt_final$fex_c)
-  hist(x=dt_final$college)
-  hist(x=dt_final$cotPension)
-  PieChart(estrato1, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
-  PieChart(sex, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
+  p <- ggplot(data=dt_final) + 
+    geom_histogram(mapping = aes(x=Ingresos_laborales , group=as.factor(female) , fill=as.factor(female)))
+  
+  p
+  
+  p + scale_fill_manual(values = c("0"="coral1" , "1"="darkblue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
+  
+  
   
   
