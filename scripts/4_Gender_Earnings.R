@@ -18,7 +18,8 @@ library(pacman)
          readxl,
          rvest,
          stargazer,
-         knitr)
+         knitr,
+         boot)
   
   library(dplyr)
   
@@ -180,6 +181,18 @@ tps1_female <- tps1_female %>%
     
     return(b1)
   }
+  
+  #test example  
 
   bt_red2(tps1_female, 1:nrow(tps1_female))
+  
+  
+  
+  #bootsatrap results
+  
+  results <- boot(tps1_female, bt_red2, R=1000)
+  results
+  
+  stargazer(results, type= "text", digits = 7, title="bootsatrap results" )
+
 
