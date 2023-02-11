@@ -160,7 +160,26 @@ tps1_female <- tps1_female %>%
 
 #FWL con bootstrap--------------------------------------------------------------
 
+  bt_red2 <- function(data,index){
+    
+    #take the residuals
+    
+    tps1_female <- tps1_female %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                              microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female, subset = index)$residuals)
+    
+    tps1_female <- tps1_female %>% mutate(ingresos_Resid = lm(Ingresos_laborales ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                                microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female, subset = index)$residuals, subset = index)
+    
+    
+    #  Regress the residuals, get the coefficients
+    coefs <- lm(ingresos_Resid~female_Resid, tps1_female, subset = index)$coefficients
+    
+    b1 <- coefs[2]
+    
+    #return coefficients
+    
+    return(b1)
+  }
 
-
-
+  bt_red2(tps1_female, 1:nrow(tps1_female))
 
