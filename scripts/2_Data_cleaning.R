@@ -76,14 +76,14 @@
 #Selección de Variables de interés ----------------------------
   
   dt_total <- base %>% 
-              select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
+    select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
               
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
   base_fin <- dt_total %>% 
-              subset(age>=18) %>% 
-              subset(ocu==1)
+    subset(age>=18) %>% 
+    subset(ocu==1)
               
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
@@ -130,8 +130,8 @@
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
   dt_final <- base_fin %>% 
-              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
-              mutate(salario = log(y_salary_m_hu)) 
+    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
+    mutate(salario = log(y_salary_m_hu)) 
   
   dt_final <- base_fin %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
@@ -143,7 +143,7 @@
   
 # Definimos las variables categoricas
   
-  Variables_categoricas <- c("maxEducLevel", "microEmpresa", "relab", "sizeFirm")
+  Variables_categoricas <- c("maxEducLevel", "relab", "sizeFirm")
   for (v in Variables_categoricas) {
     dt_final[, v] <- as.factor(dt_final[, v, drop = T])
   }
