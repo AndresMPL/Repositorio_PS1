@@ -97,6 +97,10 @@ grafico2 #revisar atípicos
   #summary(tps1_female$salario) #voy a incrementar female=1 
   #tps1_female <- tps1_female %>% mutate(salario=ifelse(female==1,salario+1000,salario))
 
+# unconditional wage gap 
+
+reg_unconditional <- lm(Ingresos_laborales ~ female , data = tps1_female)
+stargazer(reg_unconditional, type= "text", digits=7, title="unconditional wage gap")
 
 #Modelo Original
 
