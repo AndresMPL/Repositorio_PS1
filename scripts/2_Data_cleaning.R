@@ -148,7 +148,10 @@
     dt_final[, v] <- as.factor(dt_final[, v, drop = T])
   }
 
+# Dummyficar la base 
   
+  dt_final <- model.matrix(~ ., dt_final) %>%
+    as.data.frame()
 
 
 ################################################################################
