@@ -25,8 +25,19 @@
 
 #Cargar paquetes---------------------------------------------------
 
-  require(pacman)
-  p_load(tidyverse, rvest)
+  library(pacman)
+  
+  p_load(rio,
+         tidyverse,
+         skimr,
+         caret,
+         readxl,
+         rvest,
+         stargazer,
+         knitr)
+  
+  library(dplyr)
+  library(tidyr)
 
 ##############################################################################
 #       1.1 Scrapping (obtener datos)
@@ -55,7 +66,7 @@
 #Exportar base ---------------------------
   
   write.csv(base, "GEIH.csv")
-
+  
   
 ##############################################################################
 #       1.2 Limpieza de datos
@@ -67,7 +78,6 @@
   dt_total <- base %>% 
               select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
               
-  view(dt_total)
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
@@ -80,7 +90,7 @@
 
   missing_percentage <-sapply(base_fin, function(y) sum(length(which(is.na(y))))/length(base_fin$directorio))
 
-#creo una función para saber cuantos NAs hay por columna ------------------------
+#creo una función para identificar el porcetnaje de NA´s hay por columna ------------------------
 
   data_x <- as.data.frame(missing_percentage)
   View(data_x)
@@ -95,6 +105,8 @@
   count(var_keep) # Contamos cuantas variables tienen % missing menor o igual a 50% -----------------
   count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ---------------------
 
+  View(var_keep)
+  
 #Limpiamos los datos de NA´s
   
   filas_total <- nrow(base_fin)    #contamos las filas
@@ -111,28 +123,43 @@
                 sum(is.na(base_fin$salario)) + 
                 sum(is.na(base_fin$female)) + 
                 sum(is.na(base_fin$maxEducLevel)) +
-                sum(is.na(base_fin$y_total_m_ha))
+                sum(is.na(base_fin$y_total_m_ha)) +
+                sum(is.na(base_fin$age))
   conteo_na #cero es correcto
 
+#Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
-#Evaluamos datos atípicos-------------------------------------------------------
+  dt_final <- base_fin %>% 
+              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
+              mutate(salario = log(y_salary_m_hu))
   
+  dt_final$female <- ifelse(dt_final$sex == 0, 1,0) %>% as.numeric()
   
+  dt_final <- dt_final %>% mutate(salario=as.numeric(salario)) %>% 
+              mutate(maxEducLevel=as.numeric(maxEducLevel)) %>%
+              mutate(age=as.numeric(age)) %>%
+              mutate(sex=as.numeric(sex)) %>%
+              mutate(y_total_m_ha=as.numeric(y_total_m_ha))
   
-  
+  stargazer(dt_final, type='latex')
+
+
 ################################################################################
 #       1.3 Estadisticas descriptivas
 ################################################################################
 
-#Seleccionamos las variables que cumplen con el requisito y sacamos estadísticas descriptivas
-  
-  dt_final <- base_fin %>% 
-              select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
-  
-  View(dt_final)
-  stargazer(dt_final, type='latex')
 
+      
+      
+      
+      
+      
+      
+      
+      
 
+      
+      
 ################################################################################
 #              1.4 Gráficas
 ################################################################################
