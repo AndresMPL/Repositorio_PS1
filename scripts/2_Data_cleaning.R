@@ -183,3 +183,4 @@
   PieChart(estrato1, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
   PieChart(sex, hole=0, values="%", data=dt_earnings, fill=1:6, weights=dt_final$fex_c, radius=1, main="")
   
+  
