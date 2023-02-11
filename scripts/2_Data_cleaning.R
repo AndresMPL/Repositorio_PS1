@@ -110,8 +110,6 @@
 #Limpiamos los datos de NA´s
   
   filas_total <- nrow(base_fin)    #contamos las filas
-  na_total <- sum(is.na(base_fin$y_salary_m_hu))   #guardamos las filas NA en y_salary_m_hu
-  base_fin <- base_fin %>% filter(y_salary_m_hu != "NA")  #eliminamos las filas NA en y_salary_m_hu
   na_total <- na_total + sum(is.na(base_fin$maxEducLevel))   #agregamos el número filas que queden con NA en Educ Level
   base_fin <- base_fin %>% filter(maxEducLevel != "NA")   #eliminamos las filas con NA en Educ Level
   na_total <- na_total + sum(is.na(base_fin$y_total_m_ha))   #agregamos el número filas que queden con NA en y_total_m_ha
@@ -138,7 +136,10 @@
   dt_final <- dt_final %>% 
     mutate(age_squred = age^2)
   
-  str(dt_final) 
+  dt_final <- dt_final %>% 
+    rename( experiencia = p6426)
+  
+  str(dt_final)
   head(dt_final)
   
   dt_final$female <- ifelse(dt_final$sex == 0, 1, 0) %>% as.numeric()
@@ -160,7 +161,7 @@
 #       1.3 Estadisticas descriptivas
 ################################################################################
 
-
+summary(dt_final$cuentaPropia)
       
       
       
