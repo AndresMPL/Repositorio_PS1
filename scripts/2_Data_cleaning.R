@@ -3,10 +3,10 @@
 #                           
 #                               Taller 1
 #
-#   Grupo 5:  Isabella Mendez Pedraza.
-#             Manuela Ojeda Ojeda.
-#             Juan Sebastian Tellez Melo.
-#             Andres Mauricio Palacio Lugo.
+# Grupo 5:  Isabella Mendez Pedraza.
+#           Manuela Ojeda Ojeda.
+#           Juan Sebastian Tellez Melo.
+#           Andres Mauricio Palacio Lugo.
 #
 #---------------------------------------------------------------------------
 
@@ -76,14 +76,14 @@
 #Selección de Variables de interés ----------------------------
   
   dt_total <- base %>% 
-              select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
+    select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
               
 
 #Filtrar los individuos empleados y mayores de edad -------------------
 
   base_fin <- dt_total %>% 
-              subset(age>=18) %>% 
-              subset(ocu==1)
+    subset(age>=18) %>% 
+    subset(ocu==1)
               
 
 #Sacamos el porcentaje de missing values por variable ---------------------------
@@ -106,12 +106,6 @@
   count(var_delete) # Contamos cuantas variables tienen % missing mayor a 50% ---------------------
 
   View(var_keep)
-  conteo_variables <- data.frame( total_var = nrow(var),
-                                  keep_bar = nrow(var_keep),
-                                  delete_var = nrow(var_delete))
-  
-  conteo_variables #comprobamos el número de variables
-  vector_var <- as.vector(var_keep[1]) #Llevamos las variables que trabajaremos a un vector
   
 #Limpiamos los datos de NA´s
   
@@ -123,15 +117,17 @@
   filas_final <- nrow(base_fin)  #contamos las filas que quedaron
   filas_total - na_total - filas_final    #debe dar 0 cuando se cumpla la diferencia después de las eliminaciones
 
-  conteo_na <- sum(is.na(base_fin$female)) +
-               sum(is.na(base_fin$maxEducLevel)) +
-               sum(is.na(base_fin$y_total_m_ha)) +
-               sum(is.na(base_fin$age))
+  conteo_na <- sum(is.na(base_fin$salario)) +
+    sum(is.na(base_fin$female)) +
+    sum(is.na(base_fin$maxEducLevel)) +
+    sum(is.na(base_fin$y_total_m_ha)) +
+    sum(is.na(base_fin$age))
   conteo_na #cero es correcto
 
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
-  dt_final <- base_fin %>% select(all_of(vector_var$Var_name))
+  dt_final <- base_fin %>% 
+    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
   
   dt_final <- dt_final %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
@@ -140,110 +136,46 @@
     mutate(age_squred = age^2)
   
   dt_final <- dt_final %>% 
-    rename(experiencia = p6426)
+    rename( experiencia = p6426)
   
   str(dt_final)
   head(dt_final)
   
   dt_final$female <- ifelse(dt_final$sex == 0, 1, 0) %>% as.numeric()
   
-#Definimos las variables categoricas
+# Definimos las variables categoricas
   
   Variables_categoricas <- c("maxEducLevel", "relab", "sizeFirm")
-  
-  for (v in Variables_categoricas) 
-      {dt_final[, v] <- as.factor(dt_final[, v, drop = T])}
+  for (v in Variables_categoricas) {
+    dt_final[, v] <- as.factor(dt_final[, v, drop = T])
+  }
 
-#Dummyficar la base 
+# Dummyficar la base 
   
   dt_final <- model.matrix(~ ., dt_final) %>%
-              as.data.frame()
+    as.data.frame()
 
 
 ################################################################################
 #       1.3 Estadisticas descriptivas
 ################################################################################
 
-
-      
-      
-      
-
-      
+  summary(dt_final)
+  stargazer(dt_final, type='latex')
+  
       
 ################################################################################
 #              1.4 Gráficas
 ################################################################################
 
   
-#Distribución de las edades
+  p <- ggplot(data=dt_final) + 
+    geom_histogram(mapping = aes(x=Ingresos_laborales , group=as.factor(female) , fill=as.factor(female)))
   
-  dist_edad <- ggplot(data = dt_final,
-               mapping = aes(x = age))  + 
-               geom_histogram(aes(y =after_stat(density)),
-               bins = 9,
-               position = 'identity',
-               color="#424242", fill="#E3E3E3") +
-               stat_function(fun = dnorm, xlim = c(min(dt_final$age),max(dt_final$age)), colour="#1C86EE", linewidth=1,
-               args = list(mean = mean(dt_final$age), 
-               sd = sd(dt_final$age))) + 
-               labs(title = 'Distribución de edad',
-               x = 'Edad',
-               y = 'Frecuencia') + 
-               theme_bw()
+  p
   
-  #Distribución de los salarios
+  p + scale_fill_manual(values = c("0"="coral1" , "1"="darkblue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
   
-  #LogSalario
-  dist_lnsalario <- ggplot(data = dt_final,
-                  mapping = aes(x = Ingresos_laborales))  + 
-                  geom_histogram(aes(y =after_stat(density)),
-                  bins = 9,
-                  position = 'identity',
-                  color="#424242", fill="#E3E3E3") +
-                  stat_function(fun = dnorm, xlim = c(min(dt_final$Ingresos_laborales),max(dt_final$Ingresos_laborales)),
-                  colour="red", linewidth=1,
-                  args = list(mean = mean(dt_final$Ingresos_laborales), 
-                  sd = sd(dt_final$Ingresos_laborales))) + 
-                  labs(title = 'Distribución Log Salario',
-                  x = 'Salarios',
-                  y = 'Frecuencia') + 
-                  theme_bw()
-  #Salario
-  dist_salario <- ggplot(data = dt_final,
-                  mapping = aes(x = y_total_m_ha))  + 
-                  geom_histogram(aes(y =after_stat(density)),
-                  bins = 9,
-                  position = 'identity',
-                  color="#424242", fill="#E3E3E3") +
-                  stat_function(fun = dnorm, xlim = c(min(dt_final$y_total_m_ha),max(dt_final$y_total_m_ha)),
-                  colour="red", linewidth=1,
-                  args = list(mean = mean(dt_final$y_total_m_ha), 
-                  sd = sd(dt_final$y_total_m_ha))) + 
-                  labs(title = 'Distribución Salario',
-                  x = 'Salarios',
-                  y = 'Frecuencia') + 
-                  theme_bw()
   
-  #Perfil Eddad-Salario
   
-  perfil_1a <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Lineal
-                      mapping = aes(x=age , y = Ingresos_laborales)) +
-                      geom_point(size=1, color="gray") + 
-                      stat_smooth(method = lm, se = TRUE, level=0.95) + 
-                      labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
-                      theme_bw()  
- 
-  perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuadrático
-                      mapping = aes(x=age , y = Ingresos_laborales)) +
-                      geom_point(size=1, color="gray") + 
-                      stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-                      labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
-                      theme_bw()                     theme_bw()
   
-  perfil_2 <- ggplot(data=dt_final, #perfil edad-salario sin observaciones
-                      mapping = aes(x=age , y = Ingresos_laborales)) +
-                      stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-                      labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
-                      theme_bw()
-
