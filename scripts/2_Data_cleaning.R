@@ -127,7 +127,7 @@
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
   dt_final <- base_fin %>% 
-    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
+    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
   
   dt_final <- dt_final %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
