@@ -151,7 +151,7 @@ library(pacman)
     
   }
   
-  intervalo_conf <- reg_intervalo_conf(tps1_female$age, tps1_female$salario)
+  intervalo_conf <- reg_intervalo_conf(tps1_female$age, tps1_female$Ingresos_laborales)
 
 # FWL --------------------------------------------------------------------------
 
