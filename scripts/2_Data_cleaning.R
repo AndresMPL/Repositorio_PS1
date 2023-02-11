@@ -76,7 +76,7 @@
 #Selección de Variables de interés ----------------------------
   
   dt_total <- base %>% 
-    select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu,cotPension)
+    select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, ocu, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m)
               
 
 #Filtrar los individuos empleados y mayores de edad -------------------
@@ -117,19 +117,17 @@
   filas_final <- nrow(base_fin)  #contamos las filas que quedaron
   filas_total - na_total - filas_final    #debe dar 0 cuando se cumpla la diferencia después de las eliminaciones
 
-  conteo_na <-  sum(is.na(base_fin$y_salary_m_hu)) + 
-                sum(is.na(base_fin$salario)) + 
-                sum(is.na(base_fin$female)) + 
-                sum(is.na(base_fin$maxEducLevel)) +
-                sum(is.na(base_fin$y_total_m_ha)) +
-                sum(is.na(base_fin$age))
+  conteo_na <- sum(is.na(base_fin$salario)) +
+    sum(is.na(base_fin$female)) +
+    sum(is.na(base_fin$maxEducLevel)) +
+    sum(is.na(base_fin$y_total_m_ha)) +
+    sum(is.na(base_fin$age))
   conteo_na #cero es correcto
 
 #Seleccionamos las variables que cumplen con el requisito y generamos y validamos las variables que necesitamos
   
   dt_final <- base_fin %>% 
-    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
-    mutate(salario = log(y_salary_m_hu)) 
+    select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu)
   
   dt_final <- dt_final %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
