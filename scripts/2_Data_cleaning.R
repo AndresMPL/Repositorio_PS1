@@ -133,10 +133,20 @@
               select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, oficio, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
               mutate(salario = log(y_salary_m_hu)) 
   
-  str(dt_final)    
+  dt_final <- base_fin %>% 
+    mutate(Ingresos_laborales = log(y_total_m_ha))
   
-  dt_final$female <- ifelse(dt_final$sex == 0, 1,0) %>% as.numeric()
+  str(dt_final) 
+  head(dt_final)
   
+  dt_final$female <- ifelse(dt_final$sex == 0, 1, 0) %>% as.numeric()
+  
+# Definimos las variables categoricas
+  
+  Variables_categoricas <- c("maxEducLevel", "microEmpresa", "oficio", "relab", "sizeFirm")
+  for (v in Variables_categoricas) {
+    dt_final[, v] <- as.factor(dt_final[, v, drop = T])
+  }
 
   
 
