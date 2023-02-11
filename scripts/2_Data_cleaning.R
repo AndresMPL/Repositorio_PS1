@@ -161,7 +161,7 @@
 #       1.3 Estadisticas descriptivas
 ################################################################################
 
-summary(dt_final$cuentaPropia)
+
       
       
       
