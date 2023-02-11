@@ -133,7 +133,7 @@
     select(age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, maxEducLevel, microEmpresa, p6426, relab, sex, sizeFirm, y_total_m_ha, y_total_m, y_salary_m, y_salary_m_hu) %>%
     mutate(salario = log(y_salary_m_hu)) 
   
-  dt_final <- base_fin %>% 
+  dt_final <- dt_final %>% 
     mutate(Ingresos_laborales = log(y_total_m_ha))
   
   str(dt_final) 
