@@ -60,14 +60,26 @@ model5<-lm(Ingresos_laborales ~ . ,data=train)
 test$model5<-predict(model5,newdata = test)
 with(test,mean((Ingresos_laborales-model5)^2))
 
-model6<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal + poly(experiencia,4,raw=TRUE),data=train)
+model6<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=train)
 test$model6<-predict(model6,newdata = test)
 with(test,mean((Ingresos_laborales-model6)^2))
 
+model7<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal + poly(experiencia,4,raw=TRUE),data=train)
+test$model7<-predict(model7,newdata = test)
+with(test,mean((Ingresos_laborales-model7)^2))
+
+model8<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE),data=train)
+test$model8<-predict(model8,newdata = test)
+with(test,mean((Ingresos_laborales-model8)^2))
+
+model9<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE)*microEmpresa ,data=train)
+test$model9<-predict(model9,newdata = test)
+with(test,mean((Ingresos_laborales-model9)^2))
+
+model10<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE)*microEmpresa*age ,data=train)
+test$model10<-predict(model10,newdata = test)
+with(test,mean((Ingresos_laborales-model10)^2))
 
 
 
-
-
-
-stargazer(model6, type= "text", digits=7, title="Modelo Original")
+stargazer(model7, type= "text", digits=7, title="Modelo Original")
