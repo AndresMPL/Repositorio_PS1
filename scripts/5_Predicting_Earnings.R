@@ -97,35 +97,28 @@ test <- test %>%
   
   #Modelo 5
   
-  model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5) ###calculamos el modelo con todas las observaciones 
+  model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5) #calculamos el modelo con todas las observaciones 
   
-  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)## encontramos los "High Leverage Points""
-  summary(dt_final_P5$hats_P_M5) ### encontramos una observacion que genera h = 1, entonces la eliminamos 
+  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)#encontramos los "High Leverage Points""
+  summary(dt_final_P5$hats_P_M5) #encontramos una observacion que genera h = 1, entonces la eliminamos 
   
   dt_final_P5_M5 <- dt_final_P5 %>%
   filter(hats_P_M5 != 1)
   
+  model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5_M5) #volvemos a calcular el modelo sin las observaciones eliminadas 
   
+  dt_final_P5_M5$model5_L<-predict(model5_L, data=dt_final_P5_M5) #Calculamos y_hat
   
+  dt_final_P5_M5 <- dt_final_P5_M5 %>%
+    mutate(least_squares_M5 = (Ingresos_laborales - model5_L)^2) #Calculamos errores al cuadrado
   
-  dt_final_P5$model5_L<-predict(model5_L, data=dt_final_P5)
+  dt_final_P5_M5$hats_P_M5 <- hatvalues(model5_L) #encontramos los "High Leverage Points""
   
-  dt_final_P5 <- dt_final_P5 %>%
-    mutate(least_squares_M5 = (Ingresos_laborales - model5_L)^2)
+  dt_final_P5$hats_M5 <- (1- dt_final_P5$hats_P_M5)^2 
   
-  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)
-  summary(dt_final_P5$hats_P_M5) ### encontramos una observacion que genera h = 1, entonces la eliminamos 
+  dt_final_P5$lq_hat_M5 <- (dt_final_P5$least_squares_M5/dt_final_P5$hats_M5) 
   
-  dt_final_P5 <- dt_final_P5 %>%
-    filter(hats_P_M5 != 1)
-  
-  
-  dt_final_P5$hats_M5 <- (1- dt_final_P5$hats_P_M5)^2
-  
-  dt_final_P5$lq_hat_M5 <- (dt_final_P5$least_squares_M5/dt_final_P5$hats_M5)
-  
-  CV_M5 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M5), dims = 1))
-  
+  CV_M5 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M5), dims = 1)) # calculamos CV: aproximacion del MSE de LOOCV ajustando los errores por la importancia que tiene cada observacion dentro del ajsute del modelo original  
   
   #Modelo 6
   
