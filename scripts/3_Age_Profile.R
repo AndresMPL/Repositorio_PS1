@@ -4,6 +4,8 @@
 #              3. Age-Earning Profile
 #----------------------------------------------------
 
+p_load(lessR, boot)
+
 dt_edad<- dt_final %>% select(age,college, estrato1, ingtot,experiencia, y_total_m_ha, Ingresos_laborales, age_squred, female)
 
 reg_wage <- lm(dt_edad$Ingresos_laborales ~ dt_edad$age + I(dt_edad$age_squred))
