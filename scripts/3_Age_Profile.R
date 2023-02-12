@@ -10,7 +10,6 @@ dt_edad<- dt_final %>% select(age,college, estrato1, ingtot,experiencia, y_total
 
 reg_wage <- lm(dt_edad$Ingresos_laborales ~ dt_edad$age + I(dt_edad$age_squred))
 stargazer(reg_wage, type="latex")
-stargazer(reg_wage, type="text")
 reg_wage
 
 #Plot de la estimación edad-ingresos
