@@ -10,25 +10,26 @@ dt_edad<- dt_final %>% select(age,college, estrato1, ingtot,experiencia, y_total
 
 reg_wage <- lm(dt_edad$Ingresos_laborales ~ dt_edad$age + I(dt_edad$age_squred))
 stargazer(reg_wage, type="latex")
+stargazer(reg_wage, type="text")
 reg_wage
 
 #Plot de la estimación edad-ingresos
 #Intervalos de confianza
 
 boot1 <- function(data, index){
-  coef(lm(Ingresos_laborales ~ age + I(age_squred), data = dt_edad, subset = index))}
+        coef(lm(Ingresos_laborales ~ age + I(age_squred), data = dt_edad, subset = index))}
 
 boot2 <- boot(dt_edad, boot1, R=1000)
 boot3 <- t(rbind(boot2$t0, apply(boot2$t, 2, function(x) sd(x))))
 
 coeffunct <- function(data, index){
-  reg_age <- lm(Ingresos_laborales ~ age + I(age_squred), data = dt_edad, subset = index)
-  coefs <- reg_age$coefficients
-  b2 <- coefs[2]
-  b3 <- coefs[3]
-  peak_age <- -b2/(2*b3)
-  return(peak_age)
-}
+              reg_age <- lm(Ingresos_laborales ~ age + I(age_squred), data = dt_edad, subset = index)
+              coefs <- reg_age$coefficients
+              b2 <- coefs[2]
+              b3 <- coefs[3]
+              peak_age <- -b2/(2*b3)
+              return(peak_age)
+              }
 
 boot4 <- boot(dt_edad, coeffunct, R=1000)
 boot5 <- t(rbind(boot4$t0, apply(boot4$t, 2, function(x) sd(x))))
@@ -50,12 +51,11 @@ maximo <- resul_age$fitted.values
 peak <- -(resul_age$coefficients[2])/(2*(resul_age$coefficients[3]))
 dt_edad$p_edad <- resul_age$coefficients[1]+(resul_age$coefficients[2]*dt_edad$age)+(resul_age$coefficients[3]*I(dt_edad$age_squred))
 
+perfil_edad_salario <- ggplot(dt_edad, aes(x=age, y=p_edad)) + 
+                        geom_point(color='#424242', size=0.9) +
+                        geom_vline(aes(xintercept=peak), linetype='dashed', size=1, color='darkblue')+
+                        geom_linerange(aes(xmin=min, xmax=max, y = max(maximo)), size=2, color='coral1')+ xlab('Edad') +  ylab('Log ingresos totales') +
+                        ylim (0, 10) +  theme_light()
 
-ggplot(dt_edad, aes(x=age, y=p_edad)) + 
-  geom_point(color='#424242', size=0.9) +
-  geom_vline(aes(xintercept=peak), linetype='dashed', size=1, color='darkblue')+
-  geom_linerange(aes(xmin=min, xmax=max, y = max(maximo)), size=2, color='coral1')+ xlab('Edad') +  ylab('Log ingresos totales') +
-  ylim (0, 10) +  theme_light()
-
-
+perfil_edad_salario
 
