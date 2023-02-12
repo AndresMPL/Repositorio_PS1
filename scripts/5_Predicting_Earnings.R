@@ -76,12 +76,8 @@ model9<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experienci
         test$model9<-predict(model9,newdata = test)
         MSE_model9 <-with(test,mean((Ingresos_laborales-model9)^2))#Calculating the MSE
 
-model10<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE)*microEmpresa*age ,data=train)
-        test$model10<-predict(model10,newdata = test)
-        MSE_model10 <-with(test,mean((Ingresos_laborales-model10)^2))#Calculating the MSE
-
-test_MSE <- cbind(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, MSE_model10 )
-colnames(test_MSE) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7", "model 8", "model 9", "model 10" )
+test_MSE <- cbind(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9)
+colnames(test_MSE) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7", "model 8", "model 9" )
 test_MSE
 
 
@@ -96,68 +92,66 @@ test <- test %>%
 
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
-
-#Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
-#Validación cruzada de K-Fold
-
-#Generamos las partes para evaluar los modelos
-
-#Datos para hacer el modelo reproducible
-  set.seed(01010)
-
-# Evaluaremos en K partes
-  K <- nrow(dt_final_P5)
-
-#Dividimos el conjunto de datos en K partes
-  index <- split(1:nrow(dt_final), 1: K)
-
-  head(index[[1]])
-  lapply(index,length)
-
-#Aplicamos la lista de partes al conjunto de datos
-  splt <- lapply(1:K, function(ind) dt_final[index[[ind]], ])
-  head(splt[[1]])
-
-#Evaluamos los modelos dejando fuera una de las partes
-
-#Modelo 5 - model5
-
-  m1 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . , data = rbindlist(splt[-ii]))) 
-  p1 <- lapply(1:K, function(ii) data.frame(predict(m1[[ii]], newdata = rbindlist(splt[ii]))))
-  p1[1] #Comprobamos el vector creado con predicciones
   
-  for (i in 1:K) {
-                  colnames(p1[[i]])<-"yhat_1" #agregamos la predicción
-                  splt[[i]] <- cbind(splt[[i]], p1[[i]])
-                  }
-
-  head(splt[[1]])
-
-#Calculamos el MSE
-
-  mse2_k5 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
-  mse2_k5 #MSE en cada parte evaluada
-  mse2_model5 <- mean(unlist(mse2_k5))
-
-#Modelo 6 - model6
-
-  m2 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . + female*cuentaPropia*informal, data = rbindlist(splt[-ii]))) 
-  p2 <- lapply(1:K, function(ii) data.frame(predict(m2[[ii]], newdata = rbindlist(splt[ii]))))
-  p2[1] #Comprobamos el vector creado con predicciones
+  #Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
   
-  for (i in 1:K) {
-                  colnames(p2[[i]])<-"yhat_2" #agregamos la predicción
-                  splt[[i]] <- cbind(splt[[i]], p2[[i]])
-                  }
+  #Modelo 5
+  
+  model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5) ###calculamos el modelo con todas las observaciones 
+  
+  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)## encontramos los "High Leverage Points""
+  summary(dt_final_P5$hats_P_M5) ### encontramos una observacion que genera h = 1, entonces la eliminamos 
+  
+  dt_final_P5_M5 <- dt_final_P5 %>%
+  filter(hats_P_M5 != 1)
+  
+  
+  
+  
+  dt_final_P5$model5_L<-predict(model5_L, data=dt_final_P5)
+  
+  dt_final_P5 <- dt_final_P5 %>%
+    mutate(least_squares_M5 = (Ingresos_laborales - model5_L)^2)
+  
+  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)
+  summary(dt_final_P5$hats_P_M5) ### encontramos una observacion que genera h = 1, entonces la eliminamos 
+  
+  dt_final_P5 <- dt_final_P5 %>%
+    filter(hats_P_M5 != 1)
+  
+  
+  dt_final_P5$hats_M5 <- (1- dt_final_P5$hats_P_M5)^2
+  
+  dt_final_P5$lq_hat_M5 <- (dt_final_P5$least_squares_M5/dt_final_P5$hats_M5)
+  
+  CV_M5 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M5), dims = 1))
+  
+  
+  #Modelo 6
+  
+  model6_L<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=dt_final_P5)
+  
+  dt_final_P5$model6_L<-predict(model6_L, data=dt_final_P5)
+  
+  dt_final_P5 <- dt_final_P5 %>%
+    mutate(least_squares_M6 = (Ingresos_laborales - model6_L)^2)
+  
+  dt_final_P5$hats_P_M6 <- hatvalues(model6_L)
+  
+  TW2 <- dt_final_P5 %>% subset(dt_final_P5$hats_P_M6==1)
 
-  head(splt[[1]])
-
-#Calculamos el MSE
-
-  mse2_k6 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat_2)^2))
-  mse2_k6 #MSE en cada parte evaluada
-  mse2_model6 <- mean(unlist(mse2_k6))
-
+  dt_final_P5$hats_M6 <- (1- dt_final_P5$hats_P_M6)^2
+  
+  dt_final_P5 <- dt_final_P5 %>%
+    filter(hats_P_M6 != 1)
+  
+  dt_final_P5$lq_hat_M6 <- (dt_final_P5$least_squares_M6/dt_final_P5$hats_M6)
+  
+  CV_M6 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M6), dims = 1))
+  
+  CV_M6
+  
+  
 #Tabla de comparación
   
   test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, MSE_model10, mse2_model5, mse2_model6)) %>%
@@ -176,4 +170,67 @@ test <- test %>%
     theme_bw()
   
   modelos
+  
+  
+  
+  #Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
+  #Validación cruzada de K-Fold
+  
+  #Generamos las partes para evaluar los modelos
+  
+  #Datos para hacer el modelo reproducible
+  set.seed(01010)
+  
+  # Evaluaremos en K partes
+  K <- nrow(dt_final_P5)
+  
+  #Dividimos el conjunto de datos en K partes
+  index <- split(1:nrow(dt_final), 1: K)
+  
+  head(index[[1]])
+  lapply(index,length)
+  
+  #Aplicamos la lista de partes al conjunto de datos
+  splt <- lapply(1:K, function(ind) dt_final[index[[ind]], ])
+  head(splt[[1]])
+  
+  #Evaluamos los modelos dejando fuera una de las partes
+  
+  #Modelo 5 - model5
+  
+  m1 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . , data = rbindlist(splt[-ii]))) 
+  p1 <- lapply(1:K, function(ii) data.frame(predict(m1[[ii]], newdata = rbindlist(splt[ii]))))
+  p1[1] #Comprobamos el vector creado con predicciones
+  
+  for (i in 1:K) {
+    colnames(p1[[i]])<-"yhat_1" #agregamos la predicción
+    splt[[i]] <- cbind(splt[[i]], p1[[i]])
+  }
+  
+  head(splt[[1]])
+  
+  #Calculamos el MSE
+  
+  mse2_k5 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
+  mse2_k5 #MSE en cada parte evaluada
+  mse2_model5 <- mean(unlist(mse2_k5))
+  
+  #Modelo 6 - model6
+  
+  m2 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . + female*cuentaPropia*informal, data = rbindlist(splt[-ii]))) 
+  p2 <- lapply(1:K, function(ii) data.frame(predict(m2[[ii]], newdata = rbindlist(splt[ii]))))
+  p2[1] #Comprobamos el vector creado con predicciones
+  
+  for (i in 1:K) {
+    colnames(p2[[i]])<-"yhat_2" #agregamos la predicción
+    splt[[i]] <- cbind(splt[[i]], p2[[i]])
+  }
+  
+  head(splt[[1]])
+  
+  #Calculamos el MSE
+  
+  mse2_k6 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat_2)^2))
+  mse2_k6 #MSE en cada parte evaluada
+  mse2_model6 <- mean(unlist(mse2_k6))
  
