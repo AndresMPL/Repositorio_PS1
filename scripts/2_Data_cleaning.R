@@ -239,7 +239,7 @@ perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuad
   geom_point(size=1, color="gray") + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
   labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
-  theme_bw()                     theme_bw()
+  theme_bw()
 
 perfil_2 <- ggplot(data=dt_final, #perfil edad-salario sin observaciones
                    mapping = aes(x=age , y = Ingresos_laborales)) +
