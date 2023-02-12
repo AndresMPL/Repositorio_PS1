@@ -71,7 +71,7 @@ library(pacman)
 
   reg_line <- lm(Ingresos_laborales~age,   data = tps1_female)
   stargazer(reg_line, type = "text", digits=7, 
-                      title="Perfil Ingresos_laborales ~ Edad", 
+                      title="Perfil Ingresos laborales ~ Edad y Género", 
                       column.labels= "Modelo Perfil", 
                       covariate.labels = "Edad",
                       dep.var.labels = "Ln(Ingresos Lab.)")
@@ -98,7 +98,7 @@ library(pacman)
               geom_point(aes(x = age, y = mean_y, group=as.factor(sex)), color = "#FF4500", size = 2) + 
               geom_line(aes(x = age, y = yhat_line), color = "#0000EE", size = 1) +
               geom_line(aes(x = age, y = yhat_sq), color = "#00CD00", size = 1) +
-              labs(title = "Perfil Edad-Salario", x = "Edad", y = "Salario") +
+              labs(title = "Perfil Ingresos laborales ~ Edad y Género", x = "Edad", y = "Salario") +
               theme_bw()
   
   perfil_5 #revisar atípicos
@@ -106,27 +106,26 @@ library(pacman)
 
 #Edades pico con intervalos de confianza----------------------------
 
-  
-  reg_intervalo_conf <- function(x, y) {
-    n <- length(y) # Find length of y to use as sample size
-    lm_model <- lm(y ~ x + I(x^2)) # Fit linear model 
+    reg_intervalo_conf <- function(x, y) {
+    n <- length(y) #tamaño de la muestra
+    lm_model <- lm(y ~ x + I(x^2)) #modelo que evaluamos
     
-    # Extract fitted coefficients from model object
+    #Guardamos los coeficientes
     b0 <- lm_model$coefficients[1]
     b1 <- lm_model$coefficients[2]
     b2 <- lm_model$coefficients[3]
     
-    # Find SSE and MSE
+    #Calculamos SSE y MSE
     sse <- sum((y - lm_model$fitted.values)^2)
     mse <- sse / (n - 2)
     
-    t_val <- qt(0.975, n - 2) # Calculate critical t-value
+    t_val <- qt(0.975, n - 2) #Calculamos el valor crítico de t-value
     
-    # Fit linear model with extracted coefficients
+    #Evaluamos el modelo con los valores
     x_new <- 1:max(x)
     y_fit <- b0 + b1*x_new + b2*x_new^2
     
-    # Find the standard error of the regression line
+    #Calculamos el error estandar de la regresión
     se <- sqrt(sum((y - y_fit)^2) / (n - 2)) * sqrt(1 / n + (x - mean(x))^2 / sum((x - mean(x))^2))
     
     # Fit a new linear model that extends past the given data points (for plotting)
@@ -142,7 +141,7 @@ library(pacman)
     colnames(bands) <- c('Lower Confidence Band', 'Upper Confidence Band')
     
     # Plot the fitted linear regression line and the computed confidence bands
-    plot(x, y, cex = 1, pch = 21, bg = 'gray')
+    plot(x, y, cex = 1, pch = 21, bg = '#E8E8E8', col="#757575")
     lines(y_fit2, col = 'black', lwd = 2)
     lines(bands[1], col = 'blue', lty = 2, lwd = 2)
     lines(bands[2], col = 'blue', lty = 2, lwd = 2)
@@ -151,7 +150,7 @@ library(pacman)
     
   }
   
-  intervalo_conf <- reg_intervalo_conf(tps1_female$age, tps1_female$salario)
+  intervalo_conf <- reg_intervalo_conf(tps1_female$age, tps1_female$Ingresos_laborales)
 
 # FWL --------------------------------------------------------------------------
 
@@ -160,34 +159,36 @@ library(pacman)
   #summary(tps1_female$Ingresos_laborales) #voy a incrementar female=1 
   #tps1_female <- tps1_female %>% mutate(Ingresos_laborales=ifelse(female==1,Ingresos_laborales+1000,Ingresos_laborales))
 
-# unconditional wage gap 
+#Unconditional wage gap 
 
-reg_unconditional <- lm(Ingresos_laborales ~ female , data = tps1_female)
-stargazer(reg_unconditional, type= "text", digits=7, title="unconditional wage gap")
+  reg_unconditional <- lm(Ingresos_laborales ~ female , data = tps1_female)
+  stargazer(reg_unconditional, type= "text", digits=7, title="unconditional wage gap")
 
-#conditional Model
+#Conditional Model
 
-tps1_female <- tps1_female %>%
-  select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
-         microEmpresa, experiencia, Ingresos_laborales, female, age_squred)
+  tps1_fwl <- tps1_female %>%
+            select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
+            microEmpresa, experiencia, Ingresos_laborales, female, age_squred)
 
-  reg1 <- lm( Ingresos_laborales ~ female + age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                microEmpresa + experiencia + Ingresos_laborales + female + age_squred, data = tps1_female)
+  reg1 <- lm(Ingresos_laborales ~ female + age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                microEmpresa + experiencia + age_squred, data = tps1_fwl)
+  
   stargazer(reg1, type= "text", digits=7, title="Modelo Original")
 
 #(1) Regresión de la variable x1 en x2 y guardamos los residuos
 
-  tps1_female <- tps1_female %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                                                       microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female)$residuals)
+  tps1_fwl <- tps1_fwl %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                       microEmpresa + experiencia + age_squred, tps1_fwl)$residuals)
 
 #(2) Regresión de y en x2 y guardamos los residuos
 
-  tps1_female <- tps1_female %>% mutate(ingresos_Resid = lm(Ingresos_laborales ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                                                     microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female)$residuals)
+  tps1_fwl <- tps1_fwl %>% mutate(ingresos_Resid = lm(Ingresos_laborales ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+                                                     microEmpresa + experiencia + age_squred, tps1_fwl)$residuals)
 
 #(3) Regresión de los residuos de (2) sobre los residuos de (1)
 
-  reg2 <- lm(ingresos_Resid~female_Resid, tps1_female)
+  reg2 <- lm(ingresos_Resid~female_Resid, tps1_fwl)
+  
   stargazer(reg_unconditional, reg1, reg2, type = "text", digits = 7, title="Comparación de Modelos")
 
 
@@ -205,12 +206,17 @@ tps1_female <- tps1_female %>%
 
 #Gráfico
 
-  grafico3 <- ggplot(tps1_female,aes(y=Ingresos_laborales,x=age,group=female,col=factor(female))) +
+  reg3 <- lm(Ingresos_laborales~age, tps1_fwl)
+  
+  grafico3 <- ggplot(tps1_fwl,aes(y=Ingresos_laborales,x=age,group=female,col=factor(female))) +
               geom_point() +
               geom_smooth(method = lm, se = FALSE) +
-              labs(title = "Perfil Edad-Ingresos_laborales-Género", x = "Edad", y = "Ingresos_laborales") +
+              geom_abline(slope=reg3$coefficients[2],	#pendiente - aquí vemos la regresión solo de y1~x1
+                          intercept=reg3$coefficients[1], #intercepto
+                          color="blue", size=1) +
+              labs(title = "Perfil Ingresos laborales ~ Edad y Género", x = "Edad", y = "Salario") +
               theme_bw()
-  
+                   
   grafico3
 
   #La línea azul muestra la regresión del Ingresos_laborales solo con la edad
