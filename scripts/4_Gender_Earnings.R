@@ -62,8 +62,28 @@ library(pacman)
 
     
   #perfil edad-salario-género sin observaciones
-    
-  perfil_4 <- ggplot(data=dt_final, mapping = aes(x=age , y = Ingresos_laborales, group=as.factor(sex) , color=as.factor(sex))) +
+
+              max_mujer <- dt_final %>% subset(sex == 1)
+              reg_mujer <- lm(Ingresos_laborales~age + I(age^2),   data = max_mujer)
+              max_mujer$yhat_sq= predict(reg_mujer)
+              maxm <- max_mujer %>% group_by(age, sex) %>%
+                                summarize(mean_ysq = mean(yhat_sq))
+              
+              maxm1 <- maxm %>% filter(mean_ysq==max(maxm$mean_ysq, na.rm=TRUE))
+              
+              max_hombre <- dt_final %>% subset(sex == 0)
+              reg_jombre <- lm(Ingresos_laborales~age + I(age^2),   data = max_hombre)
+              max_hombre$yhat_sq= predict(reg_jombre)
+              maxh <- max_hombre %>% group_by(age, sex) %>%
+                summarize(mean_ysq = mean(yhat_sq))
+              
+              maxh1 <- maxh %>% filter(mean_ysq==max(maxh$mean_ysq, na.rm=TRUE))
+  
+   perfil_4 <- ggplot(data=dt_final, mapping = aes(x=age , y = Ingresos_laborales, group=as.factor(sex) , color=as.factor(sex))) +
+              geom_vline(xintercept = maxm1$age, linetype = 5, size=0.7, col="#008B8B")+
+              geom_vline(xintercept = maxh1$age, linetype = 5,  size=0.7, col="#CD5B45")+ 
+              geom_hline(yintercept = maxm1$mean_ysq, linetype = 5, size=0.7, col="#008B8B")+
+              geom_hline(yintercept = maxh1$mean_ysq, linetype = 5,  size=0.7, col="#CD5B45")+
               stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
               labs(title = 'Perfil Edad vs. Salario por Género', x = 'Edad', y = 'Salarios') + 
               theme_bw()
@@ -93,7 +113,7 @@ library(pacman)
                     yhat_line = mean(yhat_line),
                     yhat_sq=mean(yhat_sq),
                     .groups="drop")
-          
+  
   perfil_5 <- ggplot(perfil_promedio) + 
               geom_point(aes(x = age, y = mean_y, group=as.factor(sex)), color = "#FF4500", size = 2) + 
               geom_line(aes(x = age, y = yhat_line), color = "#0000EE", size = 1) +
@@ -143,8 +163,8 @@ library(pacman)
     # Plot the fitted linear regression line and the computed confidence bands
     plot(x, y, cex = 1, pch = 21, bg = '#E8E8E8', col="#757575")
     lines(y_fit2, col = 'black', lwd = 2)
-    lines(bands[1], col = 'blue', lty = 2, lwd = 2)
-    lines(bands[2], col = 'blue', lty = 2, lwd = 2)
+    lines(bands[1], col = '#FF7F00', lty = 3, lwd = 2)
+    lines(bands[2], col = '#FF7F00', lty = 3, lwd = 2)
     
     return(bands)
     
@@ -153,11 +173,6 @@ library(pacman)
   intervalo_conf <- reg_intervalo_conf(tps1_female$age, tps1_female$Ingresos_laborales)
 
 # FWL --------------------------------------------------------------------------
-
-#Incrementamos la variable control para hacer mas clara la diferencia
-
-  #summary(tps1_female$Ingresos_laborales) #voy a incrementar female=1 
-  #tps1_female <- tps1_female %>% mutate(Ingresos_laborales=ifelse(female==1,Ingresos_laborales+1000,Ingresos_laborales))
 
 #Unconditional wage gap 
 
@@ -206,8 +221,6 @@ library(pacman)
 
 #Gráfico
 
-  reg3 <- lm(Ingresos_laborales~age, tps1_fwl)
-  
   grafico3 <- ggplot(tps1_fwl,aes(y=Ingresos_laborales,x=age,group=female,col=factor(female))) +
               geom_point() +
               geom_smooth(method = lm, se = FALSE) +
@@ -215,7 +228,7 @@ library(pacman)
                           intercept=reg3$coefficients[1], #intercepto
                           color="blue", size=1) +
               labs(title = "Perfil Ingresos laborales ~ Edad y Género", x = "Edad", y = "Salario") +
-              theme_bw()
+                  theme_bw()
                    
   grafico3
 
