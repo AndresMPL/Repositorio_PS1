@@ -231,6 +231,25 @@ dist_lnsalario <- ggplot(data = dt_final,
   theme_bw()
 dist_lnsalario
 
+#Distribución de horas semanales habituales trabajadas
+
+dist_horastrabajadas <- ggplot(data = dt_final,
+                               mapping = aes(x = hoursWorkUsual))  + 
+  geom_histogram(aes(y =after_stat(density)),
+                 bins = 9,
+                 position = 'identity',
+                 color="#424242", fill="#E3E3E3") +
+  stat_function(fun = dnorm, xlim = c(min(dt_final$hoursWorkUsual),max(dt_final$hoursWorkUsual)),
+                colour="red", linewidth=1,
+                args = list(mean = mean(dt_final$hoursWorkUsual), 
+                            sd = sd(dt_final$hoursWorkUsual))) + 
+  labs(title = 'Figura 4:Distribución de horas semanales habituales trabajadas',
+       x = 'Horas semanales habituales trabajadas',
+       y = 'Frecuencia') + 
+  theme_bw()
+
+dist_horastrabajadas
+
 #Perfil Edad-Salario
 
 
