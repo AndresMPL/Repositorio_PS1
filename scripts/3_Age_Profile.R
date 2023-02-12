@@ -50,11 +50,13 @@ maximo <- resul_age$fitted.values
 peak <- -(resul_age$coefficients[2])/(2*(resul_age$coefficients[3]))
 dt_edad$p_edad <- resul_age$coefficients[1]+(resul_age$coefficients[2]*dt_edad$age)+(resul_age$coefficients[3]*I(dt_edad$age_squred))
 
+
 perfil_edad_salario <- ggplot(dt_edad, aes(x=age, y=p_edad)) + 
-                        geom_point(color='#424242', size=0.9) +
-                        geom_vline(aes(xintercept=peak), linetype='dashed', size=1, color='darkblue')+
-                        geom_linerange(aes(xmin=min, xmax=max, y = max(maximo)), size=2, color='coral1')+ xlab('Edad') +  ylab('Log ingresos totales') +
-                        ylim (0, 10) +  theme_light()
+  geom_point(color='#424242', size=0.9) +
+  geom_vline(aes(xintercept=peak), linetype='dashed', size=1, color='darkblue')+
+  geom_linerange(aes(xmin=min, xmax=max, y = max(maximo)), size=2, color='coral1')+labs(title = 'Figura 5:Perfil edad-salario',
+  x = 'Edad', y = 'Salario') + ylim (0, 10) +  theme_light()
+
 
 perfil_edad_salario
 
