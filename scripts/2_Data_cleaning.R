@@ -210,6 +210,7 @@ dist_lnsalario <- ggplot(data = dt_final,
        x = 'Salarios',
        y = 'Frecuencia') + 
   theme_bw()
+dist_lnsalario
 
 #Salario
 dist_salario <- ggplot(data = dt_final,
@@ -238,6 +239,8 @@ perfil_1a <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Line
   labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
   theme_bw()  
 
+perfil_1a
+
 perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuadrático
                     mapping = aes(x=age , y = Ingresos_laborales)) +
   geom_point(size=1, color="gray") + 
@@ -245,8 +248,12 @@ perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuad
   labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
   theme_bw()
 
+perfil_1b
+
 perfil_2 <- ggplot(data=dt_final, #perfil edad-salario sin observaciones
                    mapping = aes(x=age , y = Ingresos_laborales)) +
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
   labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
   theme_bw()
+
+perfil_2
