@@ -191,6 +191,8 @@ dist_edad <- ggplot(data = dt_final,
        y = 'Frecuencia') + 
   theme_bw()
 
+dist_edad
+
 #Distribución de los salarios
 
 #LogSalario
