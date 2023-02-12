@@ -139,8 +139,8 @@ dt_final <- dt_final %>%
 dt_final <- dt_final %>% 
   mutate(age_squred = age^2)
 
-dt_final <- dt_final %>% 
-  rename(experiencia = p6426)
+
+colnames(dt_final)[13]="experiencia"
 
 str(dt_final)
 head(dt_final)
@@ -163,13 +163,8 @@ dt_final <- model.matrix(~ ., dt_final) %>%
 ################################################################################
 #       1.3 Estadisticas descriptivas
 ################################################################################
-
-
-
-
-
-
-
+summary(dt_final)
+stargazer(dt_final, type='latex')
 
 ################################################################################
 #              1.4 Gráficas
