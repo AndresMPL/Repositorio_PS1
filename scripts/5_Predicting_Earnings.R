@@ -13,18 +13,17 @@
 #                      5. Predicting earnings
 #---------------------------------------------------------------------------
 
+set.seed(10101) 
+
 #seleccionar las variables que se usaran 
 
 dt_final_P5 <- dt_final %>%
-  select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
-         microEmpresa, experiencia, Ingresos_laborales, female, age_squred, oficio2:oficio99)
+                select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
+                microEmpresa, experiencia, Ingresos_laborales, female, age_squred, oficio2:oficio99)
 
-set.seed(10101) 
-
-#dividir la base 70% - 30%
+#Dividir la base 70% - 30%
 
 dt_final_P5$id <- 1:nrow(dt_final_P5)
-
 
 train  <- dt_final_P5 %>% dplyr::sample_frac(0.70) ## train sample
 test   <- dplyr::anti_join(dt_final_P5, train, by = 'id') ## test sample
@@ -34,52 +33,52 @@ test <- select(test, -id)
 
 #calculamos los modelos y los MSE
 
-## modelos ya usados  
+##modelos ya usados  
 
 model1<-lm(Ingresos_laborales ~ female ,data=train)
-test$model1<-predict(model1,newdata = test)
-MSE_model1 <- with(test,mean((Ingresos_laborales-model1)^2))#Calculating the MSE
-MSE_model1
+        test$model1<-predict(model1,newdata = test)
+        MSE_model1 <- with(test,mean((Ingresos_laborales-model1)^2))#Calculating the MSE
+        MSE_model1
 
 model2<-lm(Ingresos_laborales ~ age + age_squred ,data=train)
-test$model2<-predict(model2,newdata = test)
-MSE_model2 <-with(test,mean((Ingresos_laborales-model2)^2))#Calculating the MSE
+        test$model2<-predict(model2,newdata = test)
+        MSE_model2 <-with(test,mean((Ingresos_laborales-model2)^2))#Calculating the MSE
 
 model3<-lm(Ingresos_laborales ~ female + age + age_squred ,data=train)
-test$model3<-predict(model3,newdata = test)
-MSE_model3 <-with(test,mean((Ingresos_laborales-model3)^2))#Calculating the MSE
+        test$model3<-predict(model3,newdata = test)
+        MSE_model3 <-with(test,mean((Ingresos_laborales-model3)^2))#Calculating the MSE
 
 model4<-lm(Ingresos_laborales ~ female + age + cuentaPropia + informal + 
-             maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-             microEmpresa + experiencia +  age_squred ,data=train)
-test$model4<-predict(model4,newdata = test)
-MSE_model4 <-with(test,mean((Ingresos_laborales-model4)^2))#Calculating the MSE
+        maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+        microEmpresa + experiencia +  age_squred ,data=train)
+        test$model4<-predict(model4,newdata = test)
+        MSE_model4 <-with(test,mean((Ingresos_laborales-model4)^2))#Calculating the MSE
 
 ##nuevos modelos 
 
 model5<-lm(Ingresos_laborales ~ . ,data=train)
-test$model5<-predict(model5,newdata = test)
-MSE_model5 <-with(test,mean((Ingresos_laborales-model5)^2)) #Calculating the MSE
+        test$model5<-predict(model5,newdata = test)
+        MSE_model5 <-with(test,mean((Ingresos_laborales-model5)^2)) #Calculating the MSE
 
 model6<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=train)
-test$model6<-predict(model6,newdata = test)
-MSE_model6 <-with(test,mean((Ingresos_laborales-model6)^2))#Calculating the MSE
+        test$model6<-predict(model6,newdata = test)
+        MSE_model6 <-with(test,mean((Ingresos_laborales-model6)^2))#Calculating the MSE
 
 model7<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal + poly(experiencia,4,raw=TRUE),data=train)
-test$model7<-predict(model7,newdata = test)
-MSE_model7 <-with(test,mean((Ingresos_laborales-model7)^2))#Calculating the MSE
+        test$model7<-predict(model7,newdata = test)
+        MSE_model7 <-with(test,mean((Ingresos_laborales-model7)^2))#Calculating the MSE
 
 model8<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE),data=train)
-test$model8<-predict(model8,newdata = test)
-MSE_model8 <-with(test,mean((Ingresos_laborales-model8)^2))#Calculating the MSE
+        test$model8<-predict(model8,newdata = test)
+        MSE_model8 <-with(test,mean((Ingresos_laborales-model8)^2))#Calculating the MSE
 
 model9<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE)*microEmpresa ,data=train)
-test$model9<-predict(model9,newdata = test)
-MSE_model9 <-with(test,mean((Ingresos_laborales-model9)^2))#Calculating the MSE
+        test$model9<-predict(model9,newdata = test)
+        MSE_model9 <-with(test,mean((Ingresos_laborales-model9)^2))#Calculating the MSE
 
 model10<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experiencia,4,raw=TRUE)*microEmpresa*age ,data=train)
-test$model10<-predict(model10,newdata = test)
-MSE_model10 <-with(test,mean((Ingresos_laborales-model10)^2))#Calculating the MSE
+        test$model10<-predict(model10,newdata = test)
+        MSE_model10 <-with(test,mean((Ingresos_laborales-model10)^2))#Calculating the MSE
 
 test_MSE <- cbind(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, MSE_model10 )
 colnames(test_MSE) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7", "model 8", "model 9", "model 10" )
@@ -128,7 +127,7 @@ test <- test %>%
   p1[1] #Comprobamos el vector creado con predicciones
   
   for (i in 1:K) {
-                  colnames(p1[[i]])<-"yhat" #agregamos la predicción
+                  colnames(p1[[i]])<-"yhat_1" #agregamos la predicción
                   splt[[i]] <- cbind(splt[[i]], p1[[i]])
                   }
 
@@ -136,9 +135,9 @@ test <- test %>%
 
 #Calculamos el MSE
 
-  mse2_k <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
-  mse2_k #MSE en cada parte evaluada
-  msk_2_model5 <- mean(unlist(mse2_k))
+  mse2_k5 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
+  mse2_k5 #MSE en cada parte evaluada
+  mse2_model5 <- mean(unlist(mse2_k5))
 
 #Modelo 6 - model6
 
@@ -147,7 +146,7 @@ test <- test %>%
   p2[1] #Comprobamos el vector creado con predicciones
   
   for (i in 1:K) {
-                  colnames(p2[[i]])<-"yhat" #agregamos la predicción
+                  colnames(p2[[i]])<-"yhat_2" #agregamos la predicción
                   splt[[i]] <- cbind(splt[[i]], p2[[i]])
                   }
 
@@ -155,8 +154,8 @@ test <- test %>%
 
 #Calculamos el MSE
 
-  mse2_k <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
-  mse2_k #MSE en cada parte evaluada
-  msk_2_model6 <- mean(unlist(mse2_k))
+  mse2_k6 <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat_2)^2))
+  mse2_k6 #MSE en cada parte evaluada
+  mse2_model6 <- mean(unlist(mse2_k6))
 
 
