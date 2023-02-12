@@ -82,5 +82,10 @@ with(test,mean((Ingresos_laborales-model10)^2))
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
 
+##Errores de predicción
 
+test <- test %>%
+  mutate(pre_errors_model5 = Ingresos_laborales-model5) 
 
+test <- test %>%
+  mutate(pre_errors_model6 = Ingresos_laborales-model6) 
