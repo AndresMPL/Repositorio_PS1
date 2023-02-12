@@ -195,22 +195,6 @@ dist_edad
 
 #Distribución de los salarios
 
-#LogSalario
-dist_lnsalario <- ggplot(data = dt_final,
-                         mapping = aes(x = Ingresos_laborales))  + 
-  geom_histogram(aes(y =after_stat(density)),
-                 bins = 9,
-                 position = 'identity',
-                 color="#424242", fill="#E3E3E3") +
-  stat_function(fun = dnorm, xlim = c(min(dt_final$Ingresos_laborales),max(dt_final$Ingresos_laborales)),
-                colour="red", linewidth=1,
-                args = list(mean = mean(dt_final$Ingresos_laborales), 
-                            sd = sd(dt_final$Ingresos_laborales))) + 
-  labs(title = 'Figura 2: Distribución Log Salario',
-       x = 'Salarios',
-       y = 'Frecuencia') + 
-  theme_bw()
-dist_lnsalario
 
 #Salario
 dist_salario <- ggplot(data = dt_final,
@@ -223,12 +207,29 @@ dist_salario <- ggplot(data = dt_final,
                 colour="red", linewidth=1,
                 args = list(mean = mean(dt_final$y_total_m_ha), 
                             sd = sd(dt_final$y_total_m_ha))) + 
-  labs(title = 'Figura 3: Distribución Salario',
+  labs(title = 'Figura 2: Distribución Salario',
        x = 'Salarios',
        y = 'Frecuencia') + 
   theme_bw()
 
 dist_salario
+
+#LogSalario
+dist_lnsalario <- ggplot(data = dt_final,
+                         mapping = aes(x = Ingresos_laborales))  + 
+  geom_histogram(aes(y =after_stat(density)),
+                 bins = 9,
+                 position = 'identity',
+                 color="#424242", fill="#E3E3E3") +
+  stat_function(fun = dnorm, xlim = c(min(dt_final$Ingresos_laborales),max(dt_final$Ingresos_laborales)),
+                colour="red", linewidth=1,
+                args = list(mean = mean(dt_final$Ingresos_laborales), 
+                            sd = sd(dt_final$Ingresos_laborales))) + 
+  labs(title = 'Figura 3: Distribución Log Salario',
+       x = 'Salarios',
+       y = 'Frecuencia') + 
+  theme_bw()
+dist_lnsalario
 
 #Perfil Edad-Salario
 
