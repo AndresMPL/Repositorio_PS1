@@ -186,7 +186,7 @@ dist_edad <- ggplot(data = dt_final,
   stat_function(fun = dnorm, xlim = c(min(dt_final$age),max(dt_final$age)), colour="#1C86EE", linewidth=1,
                 args = list(mean = mean(dt_final$age), 
                             sd = sd(dt_final$age))) + 
-  labs(title = 'Distribución de edad',
+  labs(title = 'Figura 1: Distribución de edad',
        x = 'Edad',
        y = 'Frecuencia') + 
   theme_bw()
@@ -206,7 +206,7 @@ dist_lnsalario <- ggplot(data = dt_final,
                 colour="red", linewidth=1,
                 args = list(mean = mean(dt_final$Ingresos_laborales), 
                             sd = sd(dt_final$Ingresos_laborales))) + 
-  labs(title = 'Distribución Log Salario',
+  labs(title = 'Figura 2: Distribución Log Salario',
        x = 'Salarios',
        y = 'Frecuencia') + 
   theme_bw()
@@ -223,7 +223,7 @@ dist_salario <- ggplot(data = dt_final,
                 colour="red", linewidth=1,
                 args = list(mean = mean(dt_final$y_total_m_ha), 
                             sd = sd(dt_final$y_total_m_ha))) + 
-  labs(title = 'Distribución Salario',
+  labs(title = 'Figura 3: Distribución Salario',
        x = 'Salarios',
        y = 'Frecuencia') + 
   theme_bw()
@@ -245,7 +245,7 @@ perfil_1b <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Cuad
                     mapping = aes(x=age , y = Ingresos_laborales)) +
   geom_point(size=1, color="gray") + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
+  labs(title = 'Figura 4: Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
   theme_bw()
 
 perfil_1b
@@ -253,7 +253,7 @@ perfil_1b
 perfil_2 <- ggplot(data=dt_final, #perfil edad-salario sin observaciones
                    mapping = aes(x=age , y = Ingresos_laborales)) +
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
+  labs(title = 'Figura 5: Perfil Edad vs. Salario', x = 'Edad', y = 'Salarios') + 
   theme_bw()
 
 perfil_2
