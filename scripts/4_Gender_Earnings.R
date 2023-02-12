@@ -106,26 +106,26 @@ library(pacman)
 
 #Edades pico con intervalos de confianza----------------------------
 
-  reg_intervalo_conf <- function(x, y) {
-    n <- length(y) # Find length of y to use as sample size
-    lm_model <- lm(y ~ x + I(x^2)) # Fit linear model 
+    reg_intervalo_conf <- function(x, y) {
+    n <- length(y) #tamaño de la muestra
+    lm_model <- lm(y ~ x + I(x^2)) #modelo que evaluamos
     
-    # Extract fitted coefficients from model object
+    #Guardamos los coeficientes
     b0 <- lm_model$coefficients[1]
     b1 <- lm_model$coefficients[2]
     b2 <- lm_model$coefficients[3]
     
-    # Find SSE and MSE
+    #Calculamos SSE y MSE
     sse <- sum((y - lm_model$fitted.values)^2)
     mse <- sse / (n - 2)
     
-    t_val <- qt(0.975, n - 2) # Calculate critical t-value
+    t_val <- qt(0.975, n - 2) #Calculamos el valor crítico de t-value
     
-    # Fit linear model with extracted coefficients
+    #Evaluamos el modelo con los valores
     x_new <- 1:max(x)
     y_fit <- b0 + b1*x_new + b2*x_new^2
     
-    # Find the standard error of the regression line
+    #Calculamos el error estandar de la regresión
     se <- sqrt(sum((y - y_fit)^2) / (n - 2)) * sqrt(1 / n + (x - mean(x))^2 / sum((x - mean(x))^2))
     
     # Fit a new linear model that extends past the given data points (for plotting)
