@@ -80,6 +80,7 @@ model10<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experienc
 test$model10<-predict(model10,newdata = test)
 with(test,mean((Ingresos_laborales-model10)^2))
 
+# LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
 
 
-stargazer(model7, type= "text", digits=7, title="Modelo Original")
+
