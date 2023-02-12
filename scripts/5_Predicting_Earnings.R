@@ -86,8 +86,6 @@ colnames(test_MSE) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "
 test_MSE
 
 
-# LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
-
 ##Errores de predicción
 
 test <- test %>%
@@ -97,4 +95,6 @@ test <- test %>%
   mutate(pre_errors_model6 = Ingresos_laborales-model6) 
 
 
+
+# LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
 
