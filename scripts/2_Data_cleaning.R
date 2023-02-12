@@ -34,7 +34,9 @@ p_load(rio,
        readxl,
        rvest,
        stargazer,
-       knitr)
+       knitr,
+       boot,
+       data.table)
 
 library(dplyr)
 library(tidyr)
