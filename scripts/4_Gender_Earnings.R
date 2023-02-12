@@ -171,19 +171,19 @@ library(pacman)
             microEmpresa, experiencia, Ingresos_laborales, female, age_squred)
 
   reg1 <- lm(Ingresos_laborales ~ female + age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                microEmpresa + experiencia + Ingresos_laborales + female + age_squred, data = tps1_fwl)
+                microEmpresa + experiencia + age_squred, data = tps1_fwl)
   
   stargazer(reg1, type= "text", digits=7, title="Modelo Original")
 
 #(1) Regresión de la variable x1 en x2 y guardamos los residuos
 
   tps1_fwl <- tps1_fwl %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                                                       microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_fwl)$residuals)
+                                                       microEmpresa + experiencia + age_squred, tps1_fwl)$residuals)
 
 #(2) Regresión de y en x2 y guardamos los residuos
 
   tps1_fwl <- tps1_fwl %>% mutate(ingresos_Resid = lm(Ingresos_laborales ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-                                                     microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_fwl)$residuals)
+                                                     microEmpresa + experiencia + age_squred, tps1_fwl)$residuals)
 
 #(3) Regresión de los residuos de (2) sobre los residuos de (1)
 
