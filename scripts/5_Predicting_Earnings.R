@@ -106,7 +106,7 @@ test <- test %>%
   set.seed(01010)
 
 # Evaluaremos en K partes
-  K <- 5
+  K <- nrow(dt_final_P5)
 
 #Dividimos el conjunto de datos en K partes
   index <- split(1:nrow(dt_final), 1: K)
@@ -158,4 +158,22 @@ test <- test %>%
   mse2_k6 #MSE en cada parte evaluada
   mse2_model6 <- mean(unlist(mse2_k6))
 
-
+#Tabla de comparación
+  
+  test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, MSE_model10, mse2_model5, mse2_model6)) %>%
+    cbind(Modelo = c("M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M05-L","M06-L"))
+  
+  test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
+  View(test_compar)
+  
+  test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
+  test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
+  
+    modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
+    geom_point() + 
+    stat_smooth(method = lm,se = TRUE, level=0.95) + 
+    labs(title = 'Modelos', x = 'Modelo', y = 'MSE') + 
+    theme_bw()
+  
+  modelos
+ 
