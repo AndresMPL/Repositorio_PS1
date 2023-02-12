@@ -106,7 +106,7 @@ test <- test %>%
   set.seed(01010)
 
 # Evaluaremos en K partes
-  K <- 5
+  K <- nrow(dt_final_P5)
 
 #Dividimos el conjunto de datos en K partes
   index <- split(1:nrow(dt_final), 1: K)
