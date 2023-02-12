@@ -34,6 +34,8 @@ test <- select(test, -id)
 
 #calculamos los modelos y los MSE
 
+## modelos ya usados  
+
 model1<-lm(Ingresos_laborales ~ female ,data=train)
 test$model1<-predict(model1,newdata = test)
 with(test,mean((Ingresos_laborales-model1)^2))
@@ -48,12 +50,24 @@ with(test,mean((Ingresos_laborales-model3)^2))
 
 model4<-lm(Ingresos_laborales ~ female + age + cuentaPropia + informal + 
              maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
-             microEmpresa + experiencia + Ingresos_laborales + female + age_squred ,data=train)
+             microEmpresa + experiencia +  age_squred ,data=train)
 test$model4<-predict(model4,newdata = test)
 with(test,mean((Ingresos_laborales-model4)^2))
+
+##nuevos modelos 
 
 model5<-lm(Ingresos_laborales ~ . ,data=train)
 test$model5<-predict(model5,newdata = test)
 with(test,mean((Ingresos_laborales-model5)^2))
 
+model6<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal + poly(experiencia,4,raw=TRUE),data=train)
+test$model6<-predict(model6,newdata = test)
+with(test,mean((Ingresos_laborales-model6)^2))
 
+
+
+
+
+
+
+stargazer(model6, type= "text", digits=7, title="Modelo Original")
