@@ -166,7 +166,10 @@ test <- test %>%
   test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
   View(test_compar)
   
-  modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
+  test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
+  test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
+  
+    modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
     geom_point() + 
     stat_smooth(method = lm,se = TRUE, level=0.95) + 
     labs(title = 'Modelos', x = 'Modelo', y = 'MSE') + 
