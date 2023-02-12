@@ -166,7 +166,7 @@ dt_final <- model.matrix(~ ., dt_final) %>%
 dt_final2<- dt_final %>% 
   select(directorio, age, college, cuentaPropia, dsi, estrato1, formal, hoursWorkUsual, informal, ingtot, microEmpresa, experiencia, ocu, sex, y_total_m_ha, y_total_m, Ingresos_laborales, age_squred, female, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7) 
 summary(dt_final2)
-stargazer(dt_final2, type='latex')
+stargazer(dt_final2, title="Estadisticas descriptivas", type='latex')
 
 ################################################################################
 #              1.4 Gráficas
