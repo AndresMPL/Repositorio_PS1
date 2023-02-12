@@ -98,3 +98,65 @@ test <- test %>%
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
 
+#Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
+#Validación cruzada de K-Fold
+
+#Generamos las partes para evaluar los modelos
+
+#Datos para hacer el modelo reproducible
+  set.seed(01010)
+
+# Evaluaremos en K partes
+  K <- 5
+
+#Dividimos el conjunto de datos en K partes
+  index <- split(1:nrow(dt_final), 1: K)
+
+  head(index[[1]])
+  lapply(index,length)
+
+#Aplicamos la lista de partes al conjunto de datos
+  splt <- lapply(1:K, function(ind) dt_final[index[[ind]], ])
+  head(splt[[1]])
+
+#Evaluamos los modelos dejando fuera una de las partes
+
+#Modelo 5 - model5
+
+  m1 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . , data = rbindlist(splt[-ii]))) 
+  p1 <- lapply(1:K, function(ii) data.frame(predict(m1[[ii]], newdata = rbindlist(splt[ii]))))
+  p1[1] #Comprobamos el vector creado con predicciones
+  
+  for (i in 1:K) {
+                  colnames(p1[[i]])<-"yhat" #agregamos la predicción
+                  splt[[i]] <- cbind(splt[[i]], p1[[i]])
+                  }
+
+  head(splt[[1]])
+
+#Calculamos el MSE
+
+  mse2_k <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
+  mse2_k #MSE en cada parte evaluada
+  msk_2_model5 <- mean(unlist(mse2_k))
+
+#Modelo 6 - model6
+
+  m2 <- lapply(1:K, function(ii) lm(Ingresos_laborales ~ . + female*cuentaPropia*informal, data = rbindlist(splt[-ii]))) 
+  p2 <- lapply(1:K, function(ii) data.frame(predict(m2[[ii]], newdata = rbindlist(splt[ii]))))
+  p2[1] #Comprobamos el vector creado con predicciones
+  
+  for (i in 1:K) {
+                  colnames(p2[[i]])<-"yhat" #agregamos la predicción
+                  splt[[i]] <- cbind(splt[[i]], p2[[i]])
+                  }
+
+  head(splt[[1]])
+
+#Calculamos el MSE
+
+  mse2_k <- lapply(1:K, function(ii) mean((splt[[ii]]$Ingresos_laborales - splt[[ii]]$yhat)^2))
+  mse2_k #MSE en cada parte evaluada
+  msk_2_model6 <- mean(unlist(mse2_k))
+
+
