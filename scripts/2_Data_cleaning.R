@@ -227,6 +227,8 @@ dist_salario <- ggplot(data = dt_final,
        y = 'Frecuencia') + 
   theme_bw()
 
+dist_salario
+
 #Perfil Eddad-Salario
 
 perfil_1a <- ggplot(data=dt_final, #perfil edad-salario con observaciones - Lineal
