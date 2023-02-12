@@ -220,7 +220,9 @@ library(pacman)
 
 
 #Gráfico
-
+  
+  reg3 <- lm(Ingresos_laborales ~ age, tps1_fwl)   #Si omitimos un regresor se cambia los coeficientes de otros regresores
+  
   grafico3 <- ggplot(tps1_fwl,aes(y=Ingresos_laborales,x=age,group=female,col=factor(female))) +
               geom_point() +
               geom_smooth(method = lm, se = FALSE) +
