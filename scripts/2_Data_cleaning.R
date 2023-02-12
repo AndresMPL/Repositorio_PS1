@@ -149,7 +149,7 @@ dt_final$female <- ifelse(dt_final$sex == 0, 1, 0) %>% as.numeric()
 
 #Definimos las variables categoricas
 
-Variables_categoricas <- c("maxEducLevel", "relab", "sizeFirm")
+Variables_categoricas <- c("maxEducLevel", "relab", "sizeFirm", "oficio" )
 
 for (v in Variables_categoricas) 
 {dt_final[, v] <- as.factor(dt_final[, v, drop = T])}
