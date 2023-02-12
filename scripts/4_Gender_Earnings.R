@@ -30,35 +30,21 @@ library(pacman)
   tps1_female <- dt_final
 
 
-#Especificamos variables que usaremos y sus interacciones
-
-    y1 <- tps1_female$Ingresos_laborales
-    x1 <- tps1_female$age
-    x2 <- tps1_female$female
-    x3 <- tps1_female$maxEducLevel
-    x4 <- tps1_female$age^2
-    x5 <- tps1_female$age * tps1_female$maxEducLevel
-    x6 <- tps1_female$age * tps1_female$female
-    x7 <- tps1_female$female * tps1_female$maxEducLevel
-    x8 <- tps1_female$college
-
-
 # Perfil Edad-Ingresos_laborales--------------------------------------------------------
-  
-    
+
   #perfil edad-salario-género con observaciones
 
   perfil_3a <- ggplot(data=dt_final, mapping = aes(x=age , y = Ingresos_laborales, group=as.factor(sex) , color=as.factor(sex))) +
               geom_point() + 
               stat_smooth(method = lm,se = TRUE, level=0.95) + 
-              labs(title = 'Perfil Edad vs. Salario por Género', x = 'Edad', y = 'Salarios') + 
+              labs(title = 'Figura 5. Perfil Edad vs. Salario por Género', x = 'Edad', y = 'Salarios') + 
               theme_bw()
     
      
   perfil_3b <- ggplot(data=dt_final, mapping = aes(x=age , y = Ingresos_laborales, group=as.factor(sex) , color=as.factor(sex))) +
               geom_point() + 
               stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-              labs(title = 'Perfil Edad vs. Salario por Género', x = 'Edad', y = 'Salarios') + 
+              labs(title = 'Figura 6. Perfil Edad vs. Salario por Género', x = 'Edad', y = 'Salarios') + 
               theme_bw()
 
     
