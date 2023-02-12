@@ -17,9 +17,7 @@
 
 dt_final_P5 <- dt_final %>%
   select(age, cuentaPropia, informal, maxEducLevel3, maxEducLevel4, maxEducLevel5, maxEducLevel6, maxEducLevel7, 
-         microEmpresa, experiencia, Ingresos_laborales, female, age_squred)
-
-
+         microEmpresa, experiencia, Ingresos_laborales, female, age_squred, oficio2:oficio99)
 
 set.seed(10101) 
 
@@ -31,7 +29,6 @@ dt_final_P5$id <- 1:nrow(dt_final_P5)
 train  <- dt_final_P5 %>% dplyr::sample_frac(0.70) ## train sample
 test   <- dplyr::anti_join(dt_final_P5, train, by = 'id') ## test sample
 
-dim(train)
 
 #calculamos los modelos y los MSE
 
@@ -53,4 +50,9 @@ model4<-lm(Ingresos_laborales ~ female + age + cuentaPropia + informal +
 test$model4<-predict(model4,newdata = test)
 with(test,mean((Ingresos_laborales-model4)^2))
 
+model5<-lm(Ingresos_laborales ~ female + age + cuentaPropia + informal + 
+             maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
+             microEmpresa + experiencia + Ingresos_laborales + female + age_squred  ,data=train)
+test$model5<-predict(model5,newdata = test)
+with(test,mean((Ingresos_laborales-model5)^2))
 
