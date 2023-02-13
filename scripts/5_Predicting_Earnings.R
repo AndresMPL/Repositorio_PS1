@@ -110,7 +110,7 @@ dist_pre_errors_m5 <- test %>%
   ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model5)) +
   geom_point() + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  labs(title = 'Figura 11. Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
   theme_bw()
 
 dist_pre_errors_m5
@@ -119,7 +119,7 @@ dist_pre_errors_m6 <- test %>%
   ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model6)) +
   geom_point() + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Distribución de los errores cuadrados modelo 6', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  labs(title = 'Figura 12. Distribución de los errores cuadrados modelo 6', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
   theme_bw()
 
 dist_pre_errors_m6
@@ -253,7 +253,7 @@ dist_pre_errors_m6
   
   modelos_L <-  ggplot(data=test_compar_L, mapping = aes(x=Modelo , y = MSE)) +
     geom_point() + 
-    labs(title = 'Figura 11. Comparación MSE de LOOCV y conjunto de validación', x = 'Modelo', y = 'MSE') + 
+    labs(title = 'Figura 13. Comparación MSE de LOOCV y conjunto de validación', x = 'Modelo', y = 'MSE') + 
     theme_bw()
   
   modelos_L #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
