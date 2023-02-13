@@ -111,14 +111,13 @@ dist_pre_errors_m6
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
   
 #Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
-#Calculamos los MSE para los modelos con el menor error predictivo en el método anterior
 
-  #Cálculo de LOOCV - Ecuación--------------------------------------------------
+  #Calculamos los MSE - utilizando "High Leverage Points"--------------------------------------------------
   #Modelo 5
   
   model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5) #calculamos el modelo con todas las observaciones 
   
-  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)#encontramos los "High Leverage Points""
+  dt_final_P5$hats_P_M5 <- hatvalues(model5_L)#encontramos los "High Leverage Points"
   summary(dt_final_P5$hats_P_M5) #encontramos una observacion que genera h = 1, entonces la eliminamos 
   
   dt_final_P5_M5 <- dt_final_P5 %>%
