@@ -84,27 +84,29 @@ test_MSE
 ##Errores de predicción
 
 test <- test %>%
-  mutate(pre_errors_model5 = Ingresos_laborales-model5) 
+  mutate(pre_errors_model5 = (Ingresos_laborales-model5)^2)  
 
 test <- test %>%
-  mutate(pre_errors_model6 = Ingresos_laborales-model6)
+  mutate(pre_errors_model6 = (Ingresos_laborales-model6)^2)
 
 
-dist_pre_errors_m5 <- 
-  ggplot(mapping = aes(x = age))  + 
-  geom_histogram(aes(y =after_stat(density)),
-                 bins = 9,
-                 position = 'identity',
-                 color="#424242", fill="#E3E3E3") +
-  stat_function(fun = dnorm, xlim = c(min(dt_final$age),max(dt_final$age)), colour="#1C86EE", linewidth=1,
-                args = list(mean = mean(dt_final$age), 
-                            sd = sd(dt_final$age))) + 
-  labs(title = 'Figura 1: Distribución de edad',
-       x = 'Edad',
-       y = 'Frecuencia') + 
+dist_pre_errors_m5 <- test %>%
+  ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model5)) +
+  geom_point() + 
+  stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
+  labs(title = 'Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
   theme_bw()
 
-dist_edad
+dist_pre_errors_m5
+
+dist_pre_errors_m6 <- test %>%
+  ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model6)) +
+  geom_point() + 
+  stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
+  labs(title = 'Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  theme_bw()
+
+dist_pre_errors_m6
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
   
