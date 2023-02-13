@@ -87,9 +87,24 @@ test <- test %>%
   mutate(pre_errors_model5 = Ingresos_laborales-model5) 
 
 test <- test %>%
-  mutate(pre_errors_model6 = Ingresos_laborales-model6) 
+  mutate(pre_errors_model6 = Ingresos_laborales-model6)
 
 
+dist_pre_errors_m5 <- 
+  ggplot(mapping = aes(x = age))  + 
+  geom_histogram(aes(y =after_stat(density)),
+                 bins = 9,
+                 position = 'identity',
+                 color="#424242", fill="#E3E3E3") +
+  stat_function(fun = dnorm, xlim = c(min(dt_final$age),max(dt_final$age)), colour="#1C86EE", linewidth=1,
+                args = list(mean = mean(dt_final$age), 
+                            sd = sd(dt_final$age))) + 
+  labs(title = 'Figura 1: Distribución de edad',
+       x = 'Edad',
+       y = 'Frecuencia') + 
+  theme_bw()
+
+dist_edad
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
   
@@ -114,36 +129,38 @@ test <- test %>%
   
   dt_final_P5_M5$hats_P_M5 <- hatvalues(model5_L) #encontramos los "High Leverage Points""
   
-  dt_final_P5$hats_M5 <- (1- dt_final_P5$hats_P_M5)^2 
+  dt_final_P5_M5$hats_M5 <- (1- dt_final_P5_M5$hats_P_M5)^2 
   
-  dt_final_P5$lq_hat_M5 <- (dt_final_P5$least_squares_M5/dt_final_P5$hats_M5) 
+  dt_final_P5_M5$lq_hat_M5 <- (dt_final_P5_M5$least_squares_M5/dt_final_P5_M5$hats_M5) 
   
-  CV_M5 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M5), dims = 1)) # calculamos CV: aproximacion del MSE de LOOCV ajustando los errores por la importancia que tiene cada observacion dentro del ajsute del modelo original  
+  CV_M5 <- (1/nrow(dt_final_P5_M5) * colSums(as.matrix(dt_final_P5_M5$lq_hat_M5), dims = 1)) # calculamos CV: aproximacion del MSE de LOOCV ajustando los errores por la importancia que tiene cada observacion dentro del ajsute del modelo original  
   
   #Modelo 6
   
-  model6_L<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=dt_final_P5)
+  model6_L<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=dt_final_P5) #calculamos el modelo con todas las observaciones 
   
-  dt_final_P5$model6_L<-predict(model6_L, data=dt_final_P5)
+  dt_final_P5$hats_P_M6 <- hatvalues(model6_L)#encontramos los "High Leverage Points""
+  summary(dt_final_P5$hats_P_M6) #encontramos una observacion que genera h = 1, entonces la eliminamos 
   
-  dt_final_P5 <- dt_final_P5 %>%
-    mutate(least_squares_M6 = (Ingresos_laborales - model6_L)^2)
-  
-  dt_final_P5$hats_P_M6 <- hatvalues(model6_L)
-  
-  TW2 <- dt_final_P5 %>% subset(dt_final_P5$hats_P_M6==1)
-
-  dt_final_P5$hats_M6 <- (1- dt_final_P5$hats_P_M6)^2
-  
-  dt_final_P5 <- dt_final_P5 %>%
+  dt_final_P5_M6 <- dt_final_P5 %>%
     filter(hats_P_M6 != 1)
   
-  dt_final_P5$lq_hat_M6 <- (dt_final_P5$least_squares_M6/dt_final_P5$hats_M6)
+  model6_L<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal ,data=dt_final_P5_M6) #volvemos a calcular el modelo sin las observaciones eliminadas 
   
-  CV_M6 <- (1/nrow(dt_final_P5) * colSums(as.matrix(dt_final_P5$lq_hat_M6), dims = 1))
+  dt_final_P5_M6$model6_L<-predict(model6_L, data=dt_final_P5_M6) #Calculamos y_hat
   
-  CV_M6
+  dt_final_P5_M6 <- dt_final_P5_M6 %>%
+    mutate(least_squares_M6 = (Ingresos_laborales - model6_L)^2) #Calculamos errores al cuadrado
   
+  dt_final_P5_M6$hats_P_M6 <- hatvalues(model6_L) #encontramos los "High Leverage Points""
+  
+  dt_final_P5_M6$hats_M6 <- (1- dt_final_P5_M6$hats_P_M6)^2 
+  
+  dt_final_P5_M6$lq_hat_M6 <- (dt_final_P5_M6$least_squares_M6/dt_final_P5_M6$hats_M6) 
+  
+  CV_M6 <- (1/nrow(dt_final_P5_M6) * colSums(as.matrix(dt_final_P5_M6$lq_hat_M6), dims = 1)) # calculamos CV: aproximacion del MSE de LOOCV ajustando los errores por la importancia que tiene cada observacion dentro del ajsute del modelo original  
+  
+
   
 #Tabla de comparación
   
