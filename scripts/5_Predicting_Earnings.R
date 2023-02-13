@@ -103,7 +103,7 @@ dist_pre_errors_m6 <- test %>%
   ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model6)) +
   geom_point() + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  labs(title = 'Distribución de los errores cuadrados modelo 6', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
   theme_bw()
 
 dist_pre_errors_m6
