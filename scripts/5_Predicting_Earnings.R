@@ -100,17 +100,17 @@ modelos #aquí observamos la distribuación de los modelos de acuerdo con su com
 ##Errores de predicción
 
 test <- test %>%
-  mutate(pre_errors_model5 = (Ingresos_laborales-model5)^2)  
+  mutate(pre_errors_model5 = (Ingresos_laborales-model5))  
 
 test <- test %>%
-  mutate(pre_errors_model6 = (Ingresos_laborales-model6)^2)
+  mutate(pre_errors_model6 = (Ingresos_laborales-model6))
 
 
 dist_pre_errors_m5 <- test %>%
   ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model5)) +
   geom_point() + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Figura 11. Distribución de los errores cuadrados modelo 5', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  labs(title = 'Figura 11. Distribución de los errores modelo 5', x = 'Ingresos laborales', y = 'Errores') + 
   theme_bw()
 
 dist_pre_errors_m5
@@ -119,7 +119,7 @@ dist_pre_errors_m6 <- test %>%
   ggplot(mapping = aes(x=Ingresos_laborales , y = pre_errors_model6)) +
   geom_point() + 
   stat_smooth(method = lm,formula= y ~ poly(x, 2), se = TRUE, level=0.95) + 
-  labs(title = 'Figura 12. Distribución de los errores cuadrados modelo 6', x = 'Ingresos laborales', y = 'Errores cuadrados') + 
+  labs(title = 'Figura 12. Distribución de los errores modelo 6', x = 'Ingresos laborales', y = 'Errores') + 
   theme_bw()
 
 dist_pre_errors_m6
