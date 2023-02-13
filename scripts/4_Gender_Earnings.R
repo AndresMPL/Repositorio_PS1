@@ -219,7 +219,7 @@ library(pacman)
 
   bt_red2 <- function(data,index){
     
-    #Take the residuals
+    #Generamos y guardamos los residuos de cada modelo
     
     tps1_female <- tps1_female %>% mutate(female_Resid = lm(female ~ age + cuentaPropia + informal + maxEducLevel3 + maxEducLevel4 + maxEducLevel5 + maxEducLevel6 + maxEducLevel7 + 
                                                               microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female, subset = index)$residuals)
@@ -228,7 +228,7 @@ library(pacman)
                                                                 microEmpresa + experiencia + Ingresos_laborales + female + age_squred, tps1_female, subset = index)$residuals, subset = index)
     
     
-    #Regress the residuals, get the coefficients
+    #Generamos las regresiones de los residuos y guardamos los coeficientes
     coefs <- lm(ingresos_Resid~female_Resid, tps1_female, subset = index)$coefficients
     
     b1 <- coefs[2]
@@ -238,11 +238,11 @@ library(pacman)
     return(b1)
     }
   
-  #test example  
+  #Test ejemplo  
 
   bt_red2(tps1_female, 1:nrow(tps1_female))
   
-  #bootsatrap results
+  #Resultdados de bootsatrap
   
   results <- boot(tps1_female, bt_red2, R=1000)
   results
