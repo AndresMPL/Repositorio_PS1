@@ -241,6 +241,6 @@ dist_edad
               labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
               theme_bw()
   
-  modelos
+  modelos #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
   
   
