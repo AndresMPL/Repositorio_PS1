@@ -76,9 +76,25 @@ model9<-lm(Ingresos_laborales ~ . + female*cuentaPropia*informal*poly(experienci
         test$model9<-predict(model9,newdata = test)
         MSE_model9 <-with(test,mean((Ingresos_laborales-model9)^2))#Calculating the MSE
 
-test_MSE <- cbind(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9)
-colnames(test_MSE) <- c("model 1", "model 2", "model 3", "model 4", "model 5", "model 6", "model 7", "model 8", "model 9" )
-test_MSE
+
+#Tabla de comparación de los MSE
+
+test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9)) %>%
+  cbind(Modelo = c("M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09"))
+
+test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
+View(test_compar)
+
+test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
+test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
+
+modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
+  geom_point() + 
+  labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
+  theme_bw()
+
+modelos #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
+
 
 
 ##Errores de predicción
@@ -227,21 +243,19 @@ dist_pre_errors_m6
 
 #Tabla de comparación de los MSE
   
-  test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, CV_M5, CV_M6)) %>%
-                  cbind(Modelo = c("M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M05-L","M06-L"))
+  test_compar_L <- cbind(MSE = c( MSE_model5, MSE_model6, CV_M5, CV_M6)) %>%
+                  cbind(Modelo = c("M05", "M06", "M05-L","M06-L"))
   
-  test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
-  View(test_compar)
+  test_compar_L <- test_compar_L %>% as.data.frame() %>%arrange(Modelo)
+ 
+  test_compar_L <- test_compar_L %>% mutate(MSE = as.numeric(MSE))
+  test_compar_L <- test_compar_L %>% mutate(MSE = round(test_compar_L$MSE,4))
   
-  test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
-  test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
+  modelos_L <-  ggplot(data=test_compar_L, mapping = aes(x=Modelo , y = MSE)) +
+    geom_point() + 
+    labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
+    theme_bw()
   
-  modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
-              geom_point() + 
-              stat_smooth(method = lm,se = TRUE, level=0.95) + 
-              labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
-              theme_bw()
-  
-  modelos #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
+  modelos_L #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
   
   
