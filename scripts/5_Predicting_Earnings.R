@@ -108,8 +108,10 @@ dist_edad
 
 # LOOCV: Los modelos con menor error de predicción son los modelos 5 y 6 
   
-  #Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
-  
+#Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
+#Calculamos los MSE para los modelos con el menor error predictivo en el método anterior
+
+  #Cálculo de LOOCV - Ecuación--------------------------------------------------
   #Modelo 5
   
   model5_L<-lm(Ingresos_laborales ~ . ,data=dt_final_P5) #calculamos el modelo con todas las observaciones 
@@ -161,30 +163,7 @@ dist_edad
   CV_M6 <- (1/nrow(dt_final_P5_M6) * colSums(as.matrix(dt_final_P5_M6$lq_hat_M6), dims = 1)) # calculamos CV: aproximacion del MSE de LOOCV ajustando los errores por la importancia que tiene cada observacion dentro del ajsute del modelo original  
   
 
-  
-#Tabla de comparación
-  
-  test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, MSE_model10, mse2_model5, mse2_model6)) %>%
-    cbind(Modelo = c("M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M05-L","M06-L"))
-  
-  test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
-  View(test_compar)
-  
-  test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
-  test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
-  
-    modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
-    geom_point() + 
-    stat_smooth(method = lm,se = TRUE, level=0.95) + 
-    labs(title = 'Modelos', x = 'Modelo', y = 'MSE') + 
-    theme_bw()
-  
-  modelos
-  
-  
-  
-  #Leave-One-Out Cross-Validation (LOOCV)-----------------------------------------
-  #Validación cruzada de K-Fold
+  #LOOCV------------------------------------------------------------------------
   
   #Generamos las partes para evaluar los modelos
   
@@ -244,3 +223,24 @@ dist_edad
   mse2_k6 #MSE en cada parte evaluada
   mse2_model6 <- mean(unlist(mse2_k6))
  
+
+#Tabla de comparación de los MSE
+  
+  test_compar <- cbind(MSE = c(MSE_model1, MSE_model2, MSE_model3, MSE_model4, MSE_model5, MSE_model6, MSE_model7, MSE_model8, MSE_model9, CV_M5, CV_M6)) %>%
+                  cbind(Modelo = c("M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M05-L","M06-L"))
+  
+  test_compar <- test_compar %>% as.data.frame() %>%arrange(Modelo)
+  View(test_compar)
+  
+  test_compar <- test_compar %>% mutate(MSE = as.numeric(MSE))
+  test_compar <- test_compar %>% mutate(MSE = round(test_compar$MSE,4))
+  
+  modelos <-  ggplot(data=test_compar, mapping = aes(x=Modelo , y = MSE)) +
+              geom_point() + 
+              stat_smooth(method = lm,se = TRUE, level=0.95) + 
+              labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
+              theme_bw()
+  
+  modelos
+  
+  
