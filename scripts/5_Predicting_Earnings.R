@@ -253,7 +253,7 @@ dist_pre_errors_m6
   
   modelos_L <-  ggplot(data=test_compar_L, mapping = aes(x=Modelo , y = MSE)) +
     geom_point() + 
-    labs(title = 'Figura 10. Comparación de MSE y Complejidad de los Modelos', x = 'Modelo', y = 'MSE') + 
+    labs(title = 'Figura 11. Comparación MSE de LOOCV y conjunto de validación', x = 'Modelo', y = 'MSE') + 
     theme_bw()
   
   modelos_L #aquí observamos la distribuación de los modelos de acuerdo con su complejidad y MSE de predicción estimado
